@@ -7,54 +7,98 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 # sell_cnc
+
+Ứng dụng Laravel quản lý bán hàng và tồn kho, chạy cục bộ bằng Docker Compose.
+
+## Yêu cầu
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) đang chạy.
+- Node.js và npm trên máy host (dùng để build asset Vite).
+
+## Khởi tạo dự án lần đầu
+
+Chạy các lệnh sau tại thư mục gốc của dự án:
+
+```sh
+# 1. Tạo file cấu hình môi trường (chỉ chạy khi chưa có .env)
+cp .env.example .env
+
+# 2. Build image và khởi động PHP, Caddy, MySQL, Redis
+#    Không cần chạy `php artisan serve`.
+docker compose up -d --build
+
+# 3. Cài thư viện PHP trong container
+docker compose exec app composer install
+
+# 4. Tạo APP_KEY nếu .env chưa có khóa
+docker compose exec app php artisan key:generate
+
+# 5. Tạo/cập nhật các bảng database
+docker compose exec app php artisan migrate
+
+# 6. Tạo liên kết để Caddy phục vụ ảnh sản phẩm đã watermark
+docker compose exec app php artisan storage:link
+
+# 7. Cài và build CSS/JavaScript trên máy host (không chạy trong container app)
+npm ci
+npm run build
+
+# 7. Xóa cache Laravel
+docker compose exec app php artisan optimize:clear
+```
+
+Mở ứng dụng tại:
+
+- Trang chủ: [http://localhost:83](http://localhost:83)
+- Quản trị: [http://localhost:83/admin](http://localhost:83/admin)
+
+## Sau khi `git pull`
+
+```sh
+# Khởi động lại các service và build lại image khi Dockerfile thay đổi
+docker compose up -d --build
+
+# Cập nhật dependency nếu composer.lock hoặc package-lock.json có thay đổi
+docker compose exec app composer install
+npm ci
+
+# Áp dụng migration mới, tạo storage link nếu chưa có, build asset mới, và xóa cache
+docker compose exec app php artisan migrate
+docker compose exec app php artisan storage:link
+npm run build
+docker compose exec app php artisan optimize:clear
+```
+
+## Phát triển giao diện
+
+Để Vite tự build lại asset khi sửa file, chạy trên **máy host** trong một terminal riêng:
+
+```sh
+npm run dev
+```
+
+## Lệnh Docker hữu ích
+
+```sh
+# Xem trạng thái container
+docker compose ps
+
+# Xem log Caddy và PHP/Laravel
+docker compose logs --tail=100 caddy app
+
+# Dừng toàn bộ stack
+docker compose down
+
+# Dừng stack và xóa các container thừa (hữu ích khi trùng tên container)
+docker compose down --remove-orphans
+```
+
+> MySQL được lưu trong Docker volume `mysql_data`. Không chạy `docker compose down -v` trừ khi muốn xóa toàn bộ dữ liệu database và khởi tạo lại bằng `php artisan migrate`.
+
+## Xử lý lỗi thường gặp
+
+- **`npm: command not found` trong `laravel-app`:** npm không được cài trong PHP container. Hãy thoát container và chạy `npm run build` trên máy host.
+- **`Base table or view not found`:** chạy `docker compose exec app php artisan migrate`, sau đó `docker compose exec app php artisan optimize:clear`.
+- **Container name is already in use:** chạy `docker compose down --remove-orphans`, rồi `docker compose up -d --build`.
+- **Watermark ảnh sản phẩm:** đặt `IMAGE_WATERMARK_TEXT="its me"` trong `.env` (mặc định đã là `its me`). Ảnh upload chỉ được lưu dưới dạng WebP đã watermark; ảnh gốc không được lưu.

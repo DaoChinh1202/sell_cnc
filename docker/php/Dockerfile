@@ -8,7 +8,14 @@ RUN apt-get update && apt-get install -y \
     unzip \
     curl \
     libzip-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    fonts-dejavu-core \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install \
+        gd \
         pdo_mysql \
         zip
 
