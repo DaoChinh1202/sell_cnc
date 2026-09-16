@@ -98,6 +98,13 @@
                 </select>
                 @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
               </div>
+              <div class="border rounded p-3 mb-4 bg-light-subtle">
+                <div class="form-check form-switch mb-1">
+                  <input class="form-check-input" type="checkbox" role="switch" id="productFeatured" name="is_featured" value="1" @checked(old('is_featured'))>
+                  <label class="form-check-label fw-semibold" for="productFeatured">Sản phẩm nổi bật</label>
+                </div>
+                <div class="form-text">Hiển thị sản phẩm trong khu vực “Sản phẩm nổi bật” trên trang chủ.</div>
+              </div>
               <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Thêm sản phẩm</button>
                 <button type="reset" class="btn btn-secondary">Làm mới</button>

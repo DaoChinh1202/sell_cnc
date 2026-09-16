@@ -5,6 +5,11 @@ services:
       context: ./docker/php
     container_name: laravel-app
     working_dir: /var/www/html
+    # Keep bind-mounted Laravel write directories writable by PHP-FPM (www-data).
+    command: >-
+      sh -c 'mkdir -p storage bootstrap/cache &&
+      chown -R www-data:www-data storage bootstrap/cache &&
+      exec php-fpm'
     volumes:
       - .:/var/www/html
     networks:

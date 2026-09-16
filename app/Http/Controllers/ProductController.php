@@ -111,7 +111,7 @@ class ProductController extends Controller
 
     private function validatedData(Request $request, ?Product $product = null): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'category_id' => ['required', 'integer', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', Rule::unique('products', 'sku')->ignore($product)],
@@ -124,6 +124,7 @@ class ProductController extends Controller
             'minimum_quantity' => ['nullable', 'integer', 'min:0'],
             'unit' => ['nullable', 'string', 'max:255'],
             'status' => ['required', 'in:active,inactive,draft'],
+            'is_featured' => ['sometimes', 'boolean'],
             'image' => [
                 $product === null ? 'required' : 'nullable',
                 'file',
@@ -133,5 +134,9 @@ class ProductController extends Controller
                 'dimensions:min_width=100,min_height=100,max_width=6000,max_height=6000',
             ],
         ]);
+
+        $data['is_featured'] = $request->boolean('is_featured');
+
+        return $data;
     }
 }

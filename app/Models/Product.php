@@ -21,7 +21,15 @@ class Product extends Model
         'unit',
         'image',
         'status',
+        'is_featured',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_featured' => 'boolean',
+        ];
+    }
 
     public function category(): BelongsTo
     {

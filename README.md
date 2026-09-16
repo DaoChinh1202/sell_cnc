@@ -48,6 +48,10 @@ npm run build
 docker compose exec app php artisan optimize:clear
 ```
 
+Mỗi lần container `app` khởi động, Compose tự tạo (nếu thiếu) và gán quyền sở hữu
+`storage` cùng `bootstrap/cache` cho `www-data`, nên PHP-FPM có thể ghi vào các
+thư mục bind-mount này. Có thể chạy lại `docker compose up -d --build` an toàn.
+
 Mở ứng dụng tại:
 
 - Trang chủ: [http://localhost:83](http://localhost:83)

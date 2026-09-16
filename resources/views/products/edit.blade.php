@@ -41,6 +41,8 @@
 
     <div class="card mb-4"><div class="card-header bg-white py-3"><h2 class="h5 mb-0">Trạng thái</h2></div><div class="card-body p-4"><label for="productStatus" class="form-label">Trạng thái sản phẩm</label><select class="form-select" id="productStatus" name="status" style="max-width: 360px;"><option value="active" @selected(old('status', $product->status) === 'active')>Đang hoạt động</option><option value="inactive" @selected(old('status', $product->status) === 'inactive')>Ngừng hoạt động</option><option value="draft" @selected(old('status', $product->status) === 'draft')>Bản nháp</option></select></div></div>
 
+    <div class="card mb-4"><div class="card-body p-4"><div class="form-check form-switch mb-1"><input class="form-check-input" type="checkbox" role="switch" id="productFeatured" name="is_featured" value="1" @checked(old('is_featured', $product->is_featured ?? false))><label class="form-check-label fw-semibold" for="productFeatured">Sản phẩm nổi bật</label></div><div class="form-text">Hiển thị sản phẩm trong khu vực “Sản phẩm nổi bật” trên trang chủ.</div></div></div>
+
     <div class="d-flex justify-content-end gap-2 mb-4"><a href="{{ route('products.show', $product) }}" class="btn btn-outline-secondary">Hủy</a><button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy me-1"></i> Cập nhật sản phẩm</button></div>
   </form>
 @endsection
