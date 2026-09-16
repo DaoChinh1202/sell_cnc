@@ -1,8 +1,7 @@
 <aside id="sidebar" class="sidebar">
     <div class="logo-area">
         <a href="{{ route('dashboard') }}" class="d-inline-flex">
-            <img src="{{ asset('assets/images/logo-icon.svg') }}" alt="" width="24">
-            <span class="logo-text ms-2"><img src="{{ asset('assets/images/logo.svg') }}" alt=""></span>
+            <img src="{{ asset('assets/images/logo-duy-hoang-gold-brown.svg') }}" alt="Duy Hoàng CNC" width="48" height="48">
         </a>
     </div>
     <ul class="nav flex-column">

@@ -8,8 +8,7 @@
       <div class="text-center">
         <div class="mb-4">
           <a href="{{ route('dashboard') }}" class="d-inline-block mb-4">
-            <img src="{{ asset('assets/images/logo-icon.svg') }}" alt="" width="36">
-            <span class="ms-2"><img src="{{ asset('assets/images/logo.svg') }}" alt=""></span>
+            <img src="{{ asset('assets/images/logo-duy-hoang-gold-brown.svg') }}" alt="Duy Hoàng CNC" width="88" height="88">
           </a>
         </div>
 

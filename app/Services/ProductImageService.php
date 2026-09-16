@@ -46,11 +46,7 @@ class ProductImageService
         }
     }
 
-    /**
-     * @param \GdImage $image
-     * @return \GdImage
-     */
-    private function resize($image)
+    private function resize(\GdImage $image): \GdImage
     {
         $width = imagesx($image);
         $height = imagesy($image);
@@ -88,8 +84,7 @@ class ProductImageService
         return $resized;
     }
 
-    /** @param \GdImage $image */
-    private function applyWatermark($image): void
+    private function applyWatermark(\GdImage $image): void
     {
         imagealphablending($image, true);
         imagesavealpha($image, true);
@@ -140,11 +135,8 @@ class ProductImageService
         imagettftext($image, $fontSize, 0, $x, $y, $textColor, $font, $text);
     }
 
-    /**
-     * @param \GdImage $image
-     * @return array{x: int, y: int, width: int, height: int}|null
-     */
-    private function applyLogoWatermark($image, int $textHeight, int $gap): ?array
+    /** @return array{x: int, y: int, width: int, height: int}|null */
+    private function applyLogoWatermark(\GdImage $image, int $textHeight, int $gap): ?array
     {
         $logoPath = config('images.watermark_logo_path');
 
@@ -174,16 +166,25 @@ class ProductImageService
                 throw new RuntimeException('Logo watermark không hợp lệ.');
             }
 
-            $size = max(0.01, min(1.0, (float) config('images.watermark_logo_size', 0.55)));
-            $maxDimension = min(imagesx($image), imagesy($image));
-            $maxLogoHeight = max(1, imagesy($image) - $gap - $textHeight);
-            $targetDimension = min(
-                max(1, (int) round($maxDimension * $size)),
-                $maxLogoHeight,
-            );
-            $scale = min($targetDimension / $logoWidth, $targetDimension / $logoHeight);
-            $targetWidth = max(1, (int) round($logoWidth * $scale));
-            $targetHeight = max(1, (int) round($logoHeight * $scale));
+            $coverCanvas = (bool) config('images.watermark_logo_cover', true);
+
+            if ($coverCanvas) {
+                // Deliberately use the destination dimensions so every product image
+                // receives an identically sized logo overlay relative to its canvas.
+                $targetWidth = imagesx($image);
+                $targetHeight = imagesy($image);
+            } else {
+                $size = max(0.01, min(1.0, (float) config('images.watermark_logo_size', 0.55)));
+                $maxDimension = min(imagesx($image), imagesy($image));
+                $maxLogoHeight = max(1, imagesy($image) - $gap - $textHeight);
+                $targetDimension = min(
+                    max(1, (int) round($maxDimension * $size)),
+                    $maxLogoHeight,
+                );
+                $scale = min($targetDimension / $logoWidth, $targetDimension / $logoHeight);
+                $targetWidth = max(1, (int) round($logoWidth * $scale));
+                $targetHeight = max(1, (int) round($logoHeight * $scale));
+            }
 
             $scaledLogo = imagecreatetruecolor($targetWidth, $targetHeight);
 
@@ -228,14 +229,19 @@ class ProductImageService
                 }
             }
 
-            $positionX = max(0, min(1, (float) config('images.watermark_position_x', 0.5)));
-            $positionY = max(0, min(1, (float) config('images.watermark_position_y', 0.5)));
-            $groupHeight = $targetHeight + $gap + $textHeight;
-            $groupTop = (int) round(imagesy($image) * $positionY - $groupHeight / 2);
-            $groupTop = max(0, min(imagesy($image) - $groupHeight, $groupTop));
-            $x = (int) round(imagesx($image) * $positionX - $targetWidth / 2);
-            $x = max(0, min(imagesx($image) - $targetWidth, $x));
-            $y = $groupTop;
+            if ($coverCanvas) {
+                $x = 0;
+                $y = 0;
+            } else {
+                $positionX = max(0, min(1, (float) config('images.watermark_position_x', 0.5)));
+                $positionY = max(0, min(1, (float) config('images.watermark_position_y', 0.5)));
+                $groupHeight = $targetHeight + $gap + $textHeight;
+                $groupTop = (int) round(imagesy($image) * $positionY - $groupHeight / 2);
+                $groupTop = max(0, min(imagesy($image) - $groupHeight, $groupTop));
+                $x = (int) round(imagesx($image) * $positionX - $targetWidth / 2);
+                $x = max(0, min(imagesx($image) - $targetWidth, $x));
+                $y = $groupTop;
+            }
             imagealphablending($image, true);
             imagecopy($image, $scaledLogo, $x, $y, 0, 0, $targetWidth, $targetHeight);
 

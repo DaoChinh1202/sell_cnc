@@ -7,8 +7,7 @@
         <div class="card-body p-5">
             <div class="text-center mb-3">
                 <a href="{{ route('dashboard') }}" class="mb-4 d-inline-block">
-                    <img src="{{ asset('assets/images/logo-icon.svg') }}" alt="" width="36">
-                    <span class="ms-2"><img src="{{ asset('assets/images/logo.svg') }}" alt=""></span>
+                    <img src="{{ asset('assets/images/logo-duy-hoang-gold-brown.svg') }}" alt="Duy Hoàng CNC" width="88" height="88">
                 </a>
                 <h1 class="card-title mb-5 h5">Chào mừng trở lại</h1>
             </div>

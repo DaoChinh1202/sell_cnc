@@ -13,7 +13,7 @@ class ProductImageServiceTest extends TestCase
     {
         Storage::fake('public');
         config([
-            'images.watermark_logo_path' => public_path('assets/images/duy-hoang-cnc-logo-watermark.png'),
+            'images.watermark_logo_path' => public_path('assets/images/logo-duy-hoang-gold-brown.png'),
             'images.watermark_logo_opacity' => 18,
             'images.watermark_logo_size' => 0.55,
             'images.watermark_text_gap' => 0.02,

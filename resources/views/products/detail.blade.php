@@ -14,14 +14,13 @@
     $available = $quantity > 0 && data_get($product, 'status', 'active') === 'active';
 @endphp
 
-@section('title', $name . ' — Lumière Jewelry')
+@section('title', $name . ' — Duy Hoàng - Kho mẫu CNC')
 
 @section('content')
-<div class="announcement"><div class="container announcement__inner"><span>✦ Miễn phí vận chuyển cho đơn từ 2.000.000đ</span><span class="announcement__right">Hotline: 1900 6868 <i></i> Theo dõi chúng tôi trên Instagram</span></div></div>
 <header class="site-header">
     <div class="container site-header__main">
         <button class="menu-toggle" aria-label="Mở menu">☰</button>
-        <a href="{{ route('home') }}" class="brand"><img src="{{ asset('assets/images/duy-hoang-cnc-logo-vector.svg') }}" alt="Duy Hoàng CNC"></a>
+        <a href="{{ route('home') }}" class="brand"><img src="{{ asset('assets/images/logo-duy-hoang-gold-brown.svg') }}" alt="Duy Hoàng CNC"></a>
         <form class="search"><input type="search" placeholder="Tìm kiếm trang sức..." aria-label="Tìm kiếm"><button aria-label="Tìm kiếm">⌕</button></form>
         <div class="header-tools"><a href="#" aria-label="Yêu thích">♡ <small>Yêu thích</small></a><a href="#" aria-label="Tài khoản">♙ <small>Tài khoản</small></a></div>
     </div>
@@ -48,6 +47,6 @@
         </div>
     </div>
 </main>
-<footer class="footer product-detail__footer"><div class="container footer__bottom"><span>© 2024 Lumière Jewelry. Thủ công với yêu thương.</span><a href="{{ route('home') }}">Quay lại trang chủ ↗</a></div></footer>
+<footer class="footer product-detail__footer"><div class="container footer__bottom"><span>© 2024 Duy Hoàng - Kho mẫu CNC. Thủ công với yêu thương.</span><a href="{{ route('home') }}">Quay lại trang chủ ↗</a></div></footer>
 @include('partials.storefront-contact')
 @endsection
