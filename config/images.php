@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'watermark_text' => env('IMAGE_WATERMARK_TEXT', 'its me'),
+    'watermark_text' => env('IMAGE_WATERMARK_TEXT', 'Duy Hoang CNC 0869252228'),
     'quality' => (int) env('PRODUCT_IMAGE_QUALITY', 85),
     'max_width' => (int) env('PRODUCT_IMAGE_MAX_WIDTH', 2000),
     'max_height' => (int) env('PRODUCT_IMAGE_MAX_HEIGHT', 2000),
