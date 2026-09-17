@@ -1,1 +1,19 @@
-{"name":"","short_name":"","icons":[{"src":"/android-chrome-192x192.png","sizes":"192x192","type":"image/png"},{"src":"/android-chrome-512x512.png","sizes":"512x512","type":"image/png"}],"theme_color":"#ffffff","background_color":"#ffffff","display":"standalone"}
+{
+  "name": "Duy Hoàng - Kho mẫu CNC",
+  "short_name": "Duy Hoàng CNC",
+  "icons": [
+    {
+      "src": "android-chrome-192x192.png?v=duy-hoang-1",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "android-chrome-512x512.png?v=duy-hoang-1",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#5a4637",
+  "background_color": "#f8f6f1",
+  "display": "standalone"
+}
