@@ -13,13 +13,21 @@
 </header>
 
 <main id="top">
-<section class="hero" aria-label="Bộ sưu tập nổi bật">
+<section class="hero" aria-label="Mẫu thiết kế CNC nổi bật">
     <div class="hero__slides">
-        <article class="hero__slide is-active"><img src="{{ asset('assets/storefront/hero-1.png') }}" alt="Bộ sưu tập trang sức vàng"><div class="hero__copy"><p class="eyebrow">Bộ sưu tập mới · 2024</p><h1>Vẻ đẹp<br><em>lưu dấu</em></h1><p class="hero__description">Những thiết kế tinh xảo được tạo nên<br>để kể câu chuyện riêng của bạn.</p><a class="button button--dark" href="#products">Mua ngay <span>↗</span></a></div></article>
-        <article class="hero__slide"><img src="{{ asset('assets/storefront/hero-2.png') }}" alt="Trang sức thanh lịch"><div class="hero__copy"><p class="eyebrow">Ánh sáng riêng của bạn</p><h1>Chạm vào<br><em>ánh sáng</em></h1><p class="hero__description">Vẻ lấp lánh vượt thời gian, dành cho<br>những khoảnh khắc không thể quên.</p><a class="button button--dark" href="#products">Khám phá <span>↗</span></a></div></article>
-        <article class="hero__slide"><img src="{{ asset('assets/storefront/hero-3.png') }}" alt="Trang sức dành cho nàng"><div class="hero__copy"><p class="eyebrow">Dành riêng cho nàng</p><h1>Điều đẹp đẽ<br><em>nhất</em></h1><p class="hero__description">Một món quà nhỏ, một yêu thương thật lớn.</p><a class="button button--dark" href="#products">Khám phá mẫu <span>↗</span></a></div></article>
-        <article class="hero__slide"><img src="{{ asset('assets/storefront/hero-4.png') }}" alt="Trang sức kim cương"><div class="hero__copy"><p class="eyebrow">Tinh hoa kim cương</p><h1>Toả sáng<br><em>cùng em</em></h1><p class="hero__description">Khẳng định phong cách bằng vẻ đẹp thuần khiết.</p><a class="button button--dark" href="#products">Mua ngay <span>↗</span></a></div></article>
-    </div><button class="hero__arrow hero__arrow--prev" aria-label="Ảnh trước">←</button><button class="hero__arrow hero__arrow--next" aria-label="Ảnh tiếp">→</button><div class="hero__dots"></div>
+        <article class="hero__slide is-active">
+            <img src="{{ asset('assets/storefront/hero-cnc-hoanh-phi.jpg') }}" alt="Mẫu CNC hoành phi với hoa và chim phượng" width="2560" height="1126" fetchpriority="high">
+        </article>
+        <article class="hero__slide">
+            <img src="{{ asset('assets/storefront/hero-cnc-rong-nghe.jpg') }}" alt="Mẫu CNC rồng và nghê trang trí" width="2560" height="1224" decoding="async">
+        </article>
+        <article class="hero__slide">
+            <img src="{{ asset('assets/storefront/hero-cnc-hoa-van.jpg') }}" alt="Mẫu CNC hoa văn cổ điển với khung và họa tiết đối xứng" width="2560" height="1658" decoding="async">
+        </article>
+    </div>
+    <button class="hero__arrow hero__arrow--prev" aria-label="Ảnh trước">←</button>
+    <button class="hero__arrow hero__arrow--next" aria-label="Ảnh tiếp">→</button>
+    <div class="hero__dots"></div>
 </section>
 
 @php $categoryCollection = collect($categories ?? []); @endphp
@@ -39,7 +47,50 @@
     ['"Thư viện có nhiều mẫu phù hợp khách đặt hàng. Tìm đúng thiết kế nhanh hơn nên việc chốt đơn ở xưởng cũng thuận lợi hơn."','Anh Thành · Xưởng nội thất Đà Nẵng'],
     ['"Khi cần đổi tỉ lệ chi tiết, bên hỗ trợ hướng dẫn rất đúng trọng tâm kỹ thuật. Làm theo vài bước là xử lý được."','Anh Hùng · Xưởng CNC TP. Hồ Chí Minh']] as $story)<blockquote><span>"</span><p>{{ $story[0] }}</p><footer>{{ $story[1] }} <b>★★★★★</b></footer></blockquote>@endforeach</div></div></section>
 
-<section class="instagram"><div class="container"><div class="section-heading"><p class="eyebrow">@lumiere.jewelry</p><h2>Theo dõi <em>ánh sáng</em></h2></div><div class="instagram-grid">@for($i=1;$i<=8;$i++)<a href="#"><img src="{{ asset('assets/storefront/insta-'.$i.'.jpg') }}" alt="Khoảnh khắc cùng Lumière"></a>@endfor</div></div></section>
+<section class="cnc-details" aria-labelledby="cnc-details-title">
+    <div class="container">
+        <div class="section-heading">
+            <p class="eyebrow">Khám phá hoa văn CNC</p>
+            <h2 id="cnc-details-title">Chi tiết làm nên <em>vẻ đẹp</em></h2>
+            <p>Từ hoa lá mềm mại đến linh vật truyền thống, khám phá những đường nét tạo nên dấu ấn cho từng mẫu thiết kế.</p>
+        </div>
+        <div class="cnc-details__grid">
+            <a class="cnc-details__card" href="#categories">
+                <div class="cnc-details__image">
+                    <img src="{{ asset('assets/storefront/hero-cnc-hoanh-phi.jpg') }}" alt="Chi tiết hoa lá và chim phượng trên mẫu hoành phi CNC" width="2560" height="1126" loading="lazy" decoding="async">
+                </div>
+                <div class="cnc-details__copy">
+                    <span class="eyebrow">01 · Hoa lá & chim phượng</span>
+                    <h3>Đường nét mềm mại <span aria-hidden="true">↗</span></h3>
+                    <p>Hoa lá đan xen cùng chim phượng, tạo điểm nhấn cho các mẫu hoành phi và trang trí.</p>
+                </div>
+            </a>
+            <a class="cnc-details__card" href="#categories">
+                <div class="cnc-details__image">
+                    <img src="{{ asset('assets/storefront/hero-cnc-rong-nghe.jpg') }}" alt="Chi tiết rồng và nghê trong mẫu thiết kế CNC truyền thống" width="2560" height="1224" loading="lazy" decoding="async">
+                </div>
+                <div class="cnc-details__copy">
+                    <span class="eyebrow">02 · Linh vật truyền thống</span>
+                    <h3>Dấu ấn rồng nghê <span aria-hidden="true">↗</span></h3>
+                    <p>Những hình khối sinh động và họa tiết uyển chuyển mang đậm nét trang trí truyền thống.</p>
+                </div>
+            </a>
+            <a class="cnc-details__card" href="#categories">
+                <div class="cnc-details__image">
+                    <img src="{{ asset('assets/storefront/hero-cnc-hoa-van.jpg') }}" alt="Chi tiết hoa văn đối xứng và khung trang trí trên mẫu CNC cổ điển" width="2560" height="1658" loading="lazy" decoding="async">
+                </div>
+                <div class="cnc-details__copy">
+                    <span class="eyebrow">03 · Hoa văn cổ điển</span>
+                    <h3>Vẻ đẹp cân xứng <span aria-hidden="true">↗</span></h3>
+                    <p>Bố cục đối xứng cùng đường viền uốn lượn gợi ý cho các mẫu khung và tấm trang trí.</p>
+                </div>
+            </a>
+        </div>
+        <div class="cnc-details__action">
+            <a class="button button--dark" href="#categories">Khám phá danh mục CNC <span aria-hidden="true">↗</span></a>
+        </div>
+    </div>
+</section>
 <section class="services"><div class="container services__grid"><div><b>✧</b><span><strong>Miễn phí vận chuyển</strong>Cho đơn từ 2.000.000đ</span></div><div><b>◈</b><span><strong>Thanh toán linh hoạt</strong>An tâm với mọi lựa chọn</span></div><div><b>↻</b><span><strong>Đổi trả dễ dàng</strong>Trong vòng 15 ngày</span></div><div><b>♧</b><span><strong>Hỗ trợ tận tâm</strong>Luôn sẵn sàng lắng nghe</span></div></div></section>
 <section class="newsletter" id="newsletter"><div class="container newsletter__inner"><div><p class="eyebrow">Lumière journal</p><h2>Đăng ký nhận <em>tin mới</em></h2><p>Đừng bỏ lỡ những câu chuyện đẹp và ưu đãi dành riêng cho bạn.</p></div><form><input type="email" placeholder="Địa chỉ email của bạn" aria-label="Địa chỉ email"><button class="button button--light">Đăng ký <span>↗</span></button></form></div></section>
 </main>
