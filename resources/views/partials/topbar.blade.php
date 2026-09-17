@@ -65,14 +65,16 @@
                 <div class="dropdown-menu dropdown-menu-end p-0" style="min-width: 200px;">
                     <div class="d-flex gap-3 align-items-center border-dashed border-bottom px-3 py-3">
                         <img src="{{ asset('assets/images/avatar/avatar-1.jpg') }}" alt="" class="avatar avatar-md rounded-circle">
-                        <div><h4 class="mb-0 small">Shrina Tesla</h4><p class="mb-0 small">@imshrina</p></div>
+                        <div><h4 class="mb-0 small">{{ auth()->user()?->name }}</h4><p class="mb-0 small">{{ auth()->user()?->username }}</p></div>
                     </div>
                     <div class="p-3 d-flex flex-column gap-1 small lh-lg">
                         <a href="{{ route('dashboard') }}">Trang chủ</a>
-                        <a href="#">Hộp thư</a>
-                        <a href="#">Trò chuyện</a>
-                        <a href="#">Hoạt động</a>
-                        <a href="#">Cài đặt tài khoản</a>
+                        @auth
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="btn btn-link p-0 text-danger">Đăng xuất</button>
+                            </form>
+                        @endauth
                     </div>
                 </div>
             </li>

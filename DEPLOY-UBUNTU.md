@@ -24,7 +24,7 @@ Các lệnh shell bên dưới chạy trong phiên root. PHP-FPM xử lý reques
 
 Giả định VPS Ubuntu 24.04 mới, chưa có website khác cần giữ cấu hình PHP/Caddy. Trước khi cài trên VPS đang sử dụng, kiểm tra dịch vụ và port hiện có.
 
-> **Trước khi public:** source hiện tại chưa có middleware xác thực/phân quyền cho nhóm route `/admin`, gồm cả thao tác thêm/sửa sản phẩm và quản lý danh mục. Caddyfile bên dưới đã bao gồm Basic Auth bắt buộc cho admin. Giữ lớp bảo vệ này tới khi có đăng nhập và quyền quản trị tương đương trong Laravel.
+> **Quản trị:** nhóm route `/admin` đã được bảo vệ bằng đăng nhập và middleware kiểm tra quyền quản trị trong Laravel. Trang đăng nhập là `/admin/signin`, không có đăng ký. Chạy migration và `AdminUserSeeder` ở mục 9 trước khi sử dụng; tài khoản cũ không tự được cấp quyền quản trị.
 
 ### Cập nhật hệ điều hành
 
@@ -456,6 +456,25 @@ php artisan storage:link
 
 Nếu `public/storage` là symlink copy từ máy khác trỏ sai đường dẫn, kiểm tra và xóa **chỉ symlink đó** trước khi chạy lại `storage:link`; không xóa thư mục upload thật. Không chạy `migrate:fresh`, `db:wipe` hoặc xóa database để deploy.
 
+### Tạo tài khoản quản trị (cả database mới và database đã có)
+
+Sau khi chạy migration, tạo tài khoản bằng seeder riêng:
+
+```sh
+php artisan db:seed --class=AdminUserSeeder --force
+```
+
+Mở `/admin/signin` (hoặc `/admin`, ứng dụng sẽ chuyển tới trang đăng nhập). Tài khoản mẫu:
+
+- Tên đăng nhập: `duyhoangadmin`.
+- Mật khẩu: `duyhoang88@!`.
+
+Seeder lưu mật khẩu dưới dạng hash, chỉ tạo tài khoản chưa tồn tại và không đặt lại mật khẩu/quyền của tài khoản đã có. Nếu muốn dùng mật khẩu khác ngay từ đầu, sửa giá trị trong `database/seeders/AdminUserSeeder.php` trước lần chạy đầu tiên. Muốn thêm tài khoản, thêm phần tử vào mảng `$accounts` với `username` viết thường, duy nhất, `name` và `password`, rồi chạy lại lệnh trên. Email `username@admin.invalid` chỉ là giá trị nội bộ để tương thích bảng users, không dùng đăng nhập hay gửi mail.
+
+Không chạy `php artisan db:seed` không có `--class` trên dữ liệu thật: `DatabaseSeeder` còn chứa danh mục và sản phẩm demo. Không cần đăng ký tài khoản qua giao diện. Nút **Đăng xuất** có trong menu tài khoản và thanh bên của admin; sau khi đăng xuất, các trang/thao tác admin yêu cầu đăng nhập lại. Nhập sai 5 lần cho cùng tên tài khoản và IP sẽ tạm chặn đăng nhập trong 60 giây.
+
+Khi cập nhật VPS đã có source cũ, chạy `php artisan migrate --force` và seeder riêng trên, sau đó tạo lại cache theo mục 10. Không tạo lại `APP_KEY` và không xóa database.
+
 ## 10. Cache production và kiểm tra quyền
 
 ```sh
@@ -488,13 +507,7 @@ Không cần chạy `php artisan serve`, `npm run dev` hoặc `composer run dev`
 
 Chọn **một** cấu hình: domain với HTTPS, hoặc IP với HTTP trên port `8080` khi chưa có domain. Không cần cấu hình DNS cho phương án IP.
 
-Source hiện tại cần Basic Auth cho admin. Tạo hash password trước; lệnh sẽ yêu cầu nhập password tương tác:
-
-```sh
-caddy hash-password
-```
-
-Thay `REPLACE_WITH_HASH_FROM_CADDY` bằng hash vừa tạo, rồi sửa file:
+Laravel xử lý đăng nhập và quyền quản trị; Caddyfile bên dưới không dùng Basic Auth. Sửa file:
 
 ```sh
 nano /etc/caddy/Caddyfile
@@ -509,11 +522,6 @@ example.com, www.example.com {
     root * /var/www/sell_cnc/public
     encode zstd gzip
 
-    @admin path /admin /admin/*
-    basic_auth @admin {
-        admin REPLACE_WITH_HASH_FROM_CADDY
-    }
-
     php_fastcgi unix//run/php/php8.4-fpm.sock
     file_server
 
@@ -525,17 +533,12 @@ Phương án domain dùng port tiêu chuẩn **80/443**, không cần `:83` như
 
 ### Chưa có domain: IP và HTTP trên port 8080
 
-Dùng `.env` với `APP_URL=http://IP_VPS:8080`, `SESSION_SECURE_COOKIE=false`, `SESSION_DOMAIN=null` như mục 7. Thay nội dung Caddyfile bằng cấu hình sau và điền hash đã tạo:
+Dùng `.env` với `APP_URL=http://IP_VPS:8080`, `SESSION_SECURE_COOKIE=false`, `SESSION_DOMAIN=null` như mục 7. Thay nội dung Caddyfile bằng cấu hình sau:
 
 ```caddy
 :8080 {
     root * /var/www/sell_cnc/public
     encode zstd gzip
-
-    @admin path /admin /admin/*
-    basic_auth @admin {
-        admin REPLACE_WITH_HASH_FROM_CADDY
-    }
 
     php_fastcgi unix//run/php/php8.4-fpm.sock
     file_server
@@ -553,11 +556,9 @@ ufw allow 8080/tcp
 ufw status
 ```
 
-Nếu dùng Vultr Firewall, mở thêm TCP `8080` trong firewall gắn với VPS. Phương án HTTP dùng để kiểm tra giao diện; không nhập mật khẩu admin hoặc thông tin nhạy cảm qua HTTP công khai, vì Basic Auth không mã hóa đường truyền.
+Nếu dùng Vultr Firewall, mở thêm TCP `8080` trong firewall gắn với VPS. Phương án HTTP dùng để kiểm tra giao diện; không nhập mật khẩu admin hoặc thông tin nhạy cảm qua HTTP công khai, vì HTTP không mã hóa đường truyền.
 
 ### Kiểm tra và áp dụng cấu hình đã chọn
-
-Basic Auth bảo vệ các trang và thao tác admin qua Caddy, nhưng không thay thế phân quyền Laravel dài hạn. Không bỏ lớp này trước khi có bảo vệ tương đương. Cú pháp `basic_auth` yêu cầu Caddy 2.8 trở lên; dùng package stable đã cài ở mục 6.
 
 Kiểm tra và áp dụng:
 
@@ -580,11 +581,11 @@ curl -I http://IP_VPS:8080/admin
 curl -I http://IP_VPS:8080/.env
 ```
 
-Trang chủ cần trả `200`, admin chưa đăng nhập trả `401`, `/.env` trả `404`. Nếu trên VPS chạy `curl -I http://127.0.0.1:8080/` thành công nhưng từ local bị timeout, kiểm tra UFW và Vultr Firewall. Không chạy bước đăng nhập admin qua HTTP công khai.
+Trang chủ cần trả `200`, admin chưa đăng nhập trả `302` chuyển tới `/admin/signin`, `/.env` trả `404`. Nếu trên VPS chạy `curl -I http://127.0.0.1:8080/` thành công nhưng từ local bị timeout, kiểm tra UFW và Vultr Firewall. Không chạy bước đăng nhập admin qua HTTP công khai.
 
 ### Chuyển từ IP sang domain HTTPS
 
-Khi có domain, cấu hình DNS và thay site block `:8080` bằng cấu hình domain ở trên, giữ Basic Auth. Đổi `.env` sang `APP_URL=https://DOMAIN_THAT`, `SESSION_SECURE_COOKIE=true`, giữ `SESSION_DOMAIN=null`. Mở TCP 80/443 trên cả UFW và firewall nhà cung cấp, rồi chạy:
+Khi có domain, cấu hình DNS và thay site block `:8080` bằng cấu hình domain ở trên. Đổi `.env` sang `APP_URL=https://DOMAIN_THAT`, `SESSION_SECURE_COOKIE=true`, giữ `SESSION_DOMAIN=null`. Mở TCP 80/443 trên cả UFW và firewall nhà cung cấp, rồi chạy:
 
 ```sh
 cd /var/www/sell_cnc
@@ -610,9 +611,9 @@ curl -I https://example.com/admin/inventory
 curl -I https://example.com/.env
 ```
 
-Trang chủ cần trả `200`; admin chưa đăng nhập phải trả `401`; `/.env` phải trả `404`. Dùng `curl -I -u admin https://example.com/admin` để nhập password tương tác và kiểm tra admin trả `200`, không ghi password vào lệnh.
+Trang chủ và `/admin/signin` cần trả `200`; admin chưa đăng nhập phải trả `302` chuyển tới `/admin/signin`; `/.env` phải trả `404`. Đăng nhập trong trình duyệt bằng tài khoản đã seed, kiểm tra `/admin` trả `200`, rồi đăng xuất và thử truy cập lại để xác nhận được chuyển về trang đăng nhập.
 
-Mở trình duyệt thử danh mục, chi tiết sản phẩm, đăng nhập Basic Auth, thêm/sửa sản phẩm và upload ảnh. Kiểm tra watermark/font đúng, ảnh tại `/storage/products/...` trả `200`, CSS/JS tải được. Thử upload ảnh vượt giới hạn ứng dụng 5 MB để kiểm tra thông báo validation. Thay đường dẫn ảnh mẫu bằng URL upload thật khi kiểm tra.
+Mở trình duyệt thử danh mục, chi tiết sản phẩm, đăng nhập quản trị, thêm/sửa sản phẩm và upload ảnh. Kiểm tra watermark/font đúng, ảnh tại `/storage/products/...` trả `200`, CSS/JS tải được. Thử upload ảnh vượt giới hạn ứng dụng 5 MB để kiểm tra thông báo validation. Thay đường dẫn ảnh mẫu bằng URL upload thật khi kiểm tra.
 
 ## 12. Queue worker (nếu có job chạy nền)
 

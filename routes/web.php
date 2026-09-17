@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Models\Category;
@@ -103,10 +104,18 @@ Route::get('/categories/{category:slug}', function (Request $request, string $ca
 
 /*
 |--------------------------------------------------------------------------
-| Admin — port tĩnh template InApp (UI tiếng Việt, $navActive cho sidebar)
+| Admin — đăng nhập bằng username, chỉ tài khoản có quyền quản trị
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::view('/signin', 'auth.signin')->name('signin');
+        Route::post('/signin', [AdminAuthController::class, 'store'])->name('signin.store');
+    });
+    Route::post('/logout', [AdminAuthController::class, 'destroy'])->middleware('auth')->name('logout');
+});
+
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::view('/', 'dashboard', ['navActive' => 'dashboard'])->name('dashboard');
     Route::get('/inventory', [ProductController::class, 'index'])->name('inventory');
     Route::get('/create-product', [ProductController::class, 'create'])->name('products.create');
@@ -117,8 +126,6 @@ Route::prefix('admin')->group(function () {
     Route::resource('categories', CategoryController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::view('/reports', 'reports', ['navActive' => 'reports'])->name('reports');
     Route::view('/docs', 'docs', ['navActive' => 'docs'])->name('docs');
-    Route::view('/signin', 'auth.signin')->name('signin');
-    Route::view('/signup', 'auth.signup')->name('signup');
     Route::get('/404', fn () => response()->view('errors.404', ['navActive' => 'errors.404'], 404))->name('errors.404');
 });
 

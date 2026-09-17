@@ -15,7 +15,15 @@
         <li><a class="nav-link {{ ($navActive ?? null) === 'docs' ? 'active' : '' }}" href="{{ route('docs') }}"><i class="ti ti-file-text"></i><span class="nav-text">Tài liệu</span></a></li>
 
         <li class="px-4 pt-4 pb-2"><small class="nav-text">Tài khoản</small></li>
-        <li><a class="nav-link" href="{{ route('signin') }}"><i class="ti ti-logout"></i><span class="nav-text">Đăng nhập</span></a></li>
-        <li><a class="nav-link" href="{{ route('signup') }}"><i class="ti ti-user-plus"></i><span class="nav-text">Đăng ký</span></a></li>
+        @auth
+            <li>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="nav-link border-0 bg-transparent w-100 text-start"><i class="ti ti-logout"></i><span class="nav-text">Đăng xuất</span></button>
+                </form>
+            </li>
+        @else
+            <li><a class="nav-link" href="{{ route('signin') }}"><i class="ti ti-login"></i><span class="nav-text">Đăng nhập</span></a></li>
+        @endauth
     </ul>
 </aside>

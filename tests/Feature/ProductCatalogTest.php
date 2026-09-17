@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,6 +14,8 @@ class ProductCatalogTest extends TestCase
 
     public function test_admin_product_updates_persist_featured_input(): void
     {
+        $this->actingAs(User::factory()->admin()->create());
+
         $category = Category::query()->create([
             'name' => 'Trang sức',
             'slug' => 'trang-suc',
