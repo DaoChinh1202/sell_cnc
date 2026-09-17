@@ -1,6 +1,11 @@
 import '../sass/storefront.scss';
+import { protectStorefront } from './storefront-protection';
+import { initProductImageZoom } from './product-image-zoom';
 
 document.addEventListener('DOMContentLoaded', () => {
+    protectStorefront();
+    initProductImageZoom();
+
     const slides = [...document.querySelectorAll('.hero__slide')];
     const dots = document.querySelector('.hero__dots');
     let current = 0;
