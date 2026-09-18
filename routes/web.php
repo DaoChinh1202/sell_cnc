@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\StorefrontController;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -14,40 +15,8 @@ use Illuminate\Validation\Rule;
 | Storefront — trang khách hàng
 |--------------------------------------------------------------------------
 */
-Route::get('/', function () {
-    $categories = Category::query()
-        ->where('status', 'active')
-        ->withCount([
-            'products' => fn ($query) => $query->where('status', 'active'),
-        ])
-        ->get();
-
-    $featuredProducts = Product::query()
-        ->with('category')
-        ->where('status', 'active')
-        ->where('is_featured', true)
-        ->whereHas('category', fn ($query) => $query->where('status', 'active'))
-        ->latest()
-        ->get();
-
-    $newestProducts = Product::query()
-        ->with('category')
-        ->where('status', 'active')
-        ->where('is_featured', false)
-        ->whereHas('category', fn ($query) => $query->where('status', 'active'))
-        ->latest()
-        ->take(4)
-        ->get();
-
-    return view('home', [
-        'categories' => $categories,
-        'featuredProducts' => $featuredProducts,
-        'newestProducts' => $newestProducts,
-        // Keep the existing storefront section supplied until it consumes the
-        // dedicated featured and newest collections directly.
-        'products' => $featuredProducts,
-    ]);
-})->name('home');
+Route::get('/', [StorefrontController::class, 'index'])->name('home');
+Route::get('/products', [StorefrontController::class, 'search'])->name('storefront.products.index');
 
 Route::get('/products/{product}', function (string $product) {
     $product = Product::query()

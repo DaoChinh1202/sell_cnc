@@ -73,7 +73,7 @@ class ProductCatalogTest extends TestCase
         $this->assertFalse($product->fresh()->is_featured);
     }
 
-    public function test_home_exposes_active_categories_and_separate_product_lists(): void
+    public function test_home_exposes_active_categories_and_visible_newest_products(): void
     {
         $activeCategory = Category::query()->create([
             'name' => 'Trang sức',
@@ -134,26 +134,13 @@ class ProductCatalogTest extends TestCase
                 return $categories->modelKeys() === [$activeCategory->id]
                     && $categories->first()->products_count == 2;
             })
-            ->assertViewHas('featuredProducts', function ($products) use ($featured, $activeCategory): bool {
-                return $products->modelKeys() === [$featured->id]
-                    && $products->every(fn (Product $product): bool =>
-                        $product->relationLoaded('category')
-                        && $product->category->is($activeCategory));
-            })
-            ->assertViewHas('newestProducts', function ($products) use ($newest, $activeCategory): bool {
-                return $products->modelKeys() === [$newest->id]
-                    && $products->every(fn (Product $product): bool =>
-                        $product->relationLoaded('category')
-                        && $product->category->is($activeCategory));
+            ->assertViewHas('newestProducts', function ($products) use ($newest, $featured): bool {
+                return $products->modelKeys() === [$newest->id, $featured->id]
+                    && $products->every(fn (Product $product): bool => $product->relationLoaded('category'));
             });
-
-        $this->assertNotSame(
-            $response->viewData('featuredProducts')->modelKeys(),
-            $response->viewData('newestProducts')->modelKeys()
-        );
     }
 
-    public function test_home_exposes_only_active_featured_products(): void
+    public function test_home_includes_featured_products_in_category_sections(): void
     {
         $category = Category::query()->create([
             'name' => 'Trang sức',
@@ -173,8 +160,8 @@ class ProductCatalogTest extends TestCase
         $response = $this->get(route('home'));
 
         $response->assertOk();
-        $response->assertViewHas('featuredProducts', function ($products) use ($featured): bool {
-            return $products->modelKeys() === [$featured->id];
+        $response->assertViewHas('categorySections', function ($categories) use ($featured): bool {
+            return $categories->first()->products->modelKeys() === [$featured->id];
         });
     }
 

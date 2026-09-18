@@ -21,15 +21,15 @@
     <div class="container site-header__main">
         <button class="menu-toggle" aria-label="Mở menu">☰</button>
         <a href="{{ route('home') }}" class="brand"><img src="{{ asset('assets/images/logo-duy-hoang-gold-brown.svg') }}" alt="Duy Hoàng CNC"></a>
-        <form class="search"><input type="search" placeholder="Tìm kiếm trang sức..." aria-label="Tìm kiếm"><button aria-label="Tìm kiếm">⌕</button></form>
+        <form class="search" method="get" action="{{ route('storefront.products.index') }}"><input type="search" name="q" maxlength="100" placeholder="Tìm kiếm mẫu CNC..." aria-label="Tìm kiếm"><button aria-label="Tìm kiếm">⌕</button></form>
         <div class="header-tools"><a href="#" aria-label="Yêu thích">♡ <small>Yêu thích</small></a><a href="#" aria-label="Tài khoản">♙ <small>Tài khoản</small></a></div>
     </div>
-    <nav class="main-nav"><div class="container main-nav__inner"><button class="all-categories">☷ <span>Tất cả danh mục</span></button><div class="nav-links"><a href="{{ route('home') }}">Trang chủ</a><a class="active" href="{{ route('home') }}#products">Cửa hàng</a><a href="{{ route('home') }}#gifts">Quà tặng</a><a href="{{ route('home') }}#categories">Bông tai</a><a href="{{ route('home') }}#products">Nhẫn</a><a href="{{ route('home') }}#stories">Về chúng tôi</a><a href="{{ route('home') }}#newsletter">Liên hệ</a></div></div></nav>
+    <nav class="main-nav"><div class="container main-nav__inner"><a class="all-categories" href="{{ route('home') }}#categories">☷ <span>Tất cả danh mục</span></a><div class="nav-links"><a href="{{ route('home') }}">Trang chủ</a><a class="active" href="{{ route('home') }}#products">Thư viện mẫu</a><a href="{{ route('home') }}#categories">Danh mục CNC</a><a href="{{ route('home') }}#contact">Liên hệ</a></div></div></nav>
 </header>
 
 <main class="product-detail">
     <div class="container">
-        <nav class="product-detail__breadcrumb" aria-label="Đường dẫn"><a href="{{ route('home') }}">Trang chủ</a><span>/</span><a href="{{ route('home') }}#products">Cửa hàng</a><span>/</span><strong>{{ $name }}</strong></nav>
+        <nav class="product-detail__breadcrumb" aria-label="Đường dẫn"><a href="{{ route('home') }}">Trang chủ</a><span>/</span><a href="{{ route('home') }}#products">Thư viện mẫu</a><span>/</span><strong>{{ $name }}</strong></nav>
         <div class="product-detail__layout">
             <figure class="product-detail__gallery"><img src="{{ $imageUrl }}" alt="{{ $name }}"></figure>
             <section class="product-detail__summary" aria-labelledby="product-title">
