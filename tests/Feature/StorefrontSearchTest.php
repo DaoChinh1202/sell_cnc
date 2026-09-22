@@ -58,7 +58,7 @@ class StorefrontSearchTest extends TestCase
             ->assertViewHas('products', fn ($products) => $products->total() === 18);
     }
 
-    public function test_home_limits_each_category_independently_and_skips_empty_categories(): void
+    public function test_home_exposes_active_categories_with_visible_product_counts(): void
     {
         $this->category('empty');
         foreach (['chairs', 'decor'] as $slug) {
@@ -70,10 +70,10 @@ class StorefrontSearchTest extends TestCase
         }
         $this->get('/')->assertOk()->assertDontSee('hero__slides', false)
             ->assertSee('name="q"', false)
-            ->assertViewHas('categorySections', fn ($categories) => $categories->count() === 2
-                && $categories->every(fn ($category) => $category->products_count === 10
-                    && $category->products->count() === 8
-                    && $category->products->every(fn ($product) => $product->status === 'active')))
+            ->assertViewHas('categories', fn ($categories) => $categories->count() === 3
+                && $categories->firstWhere('slug', 'chairs')->products_count === 10
+                && $categories->firstWhere('slug', 'decor')->products_count === 10
+                && $categories->firstWhere('slug', 'empty')->products_count === 0)
             ->assertViewHas('newestProducts', fn ($products) => $products->count() === 4);
     }
 

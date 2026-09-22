@@ -78,6 +78,7 @@ class ProductCatalogTest extends TestCase
         $activeCategory = Category::query()->create([
             'name' => 'Trang sức',
             'slug' => 'trang-suc-home',
+            'image' => 'categories/trang-suc-home.jpg',
             'status' => 'active',
         ]);
         $inactiveCategory = Category::query()->create([
@@ -130,6 +131,7 @@ class ProductCatalogTest extends TestCase
         $response = $this->get(route('home'));
 
         $response->assertOk()
+            ->assertSee('storage/categories/trang-suc-home.jpg', false)
             ->assertViewHas('categories', function ($categories) use ($activeCategory): bool {
                 return $categories->modelKeys() === [$activeCategory->id]
                     && $categories->first()->products_count == 2;
@@ -140,14 +142,14 @@ class ProductCatalogTest extends TestCase
             });
     }
 
-    public function test_home_includes_featured_products_in_category_sections(): void
+    public function test_home_exposes_categories_with_visible_products(): void
     {
         $category = Category::query()->create([
             'name' => 'Trang sức',
             'slug' => 'trang-suc-featured-only',
             'status' => 'active',
         ]);
-        $featured = Product::query()->create([
+        Product::query()->create([
             'category_id' => $category->id,
             'name' => 'Sản phẩm nổi bật',
             'sku' => 'HOME-005',
@@ -159,10 +161,9 @@ class ProductCatalogTest extends TestCase
 
         $response = $this->get(route('home'));
 
-        $response->assertOk();
-        $response->assertViewHas('categorySections', function ($categories) use ($featured): bool {
-            return $categories->first()->products->modelKeys() === [$featured->id];
-        });
+        $response->assertOk()
+            ->assertViewHas('categories', fn ($categories) => $categories->modelKeys() === [$category->id]
+                && $categories->first()->products_count === 1);
     }
 
     public function test_public_product_detail_displays_active_product_with_category(): void

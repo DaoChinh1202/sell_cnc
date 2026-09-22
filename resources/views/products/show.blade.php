@@ -33,22 +33,16 @@
     </div>
     <div class="col-lg-7">
       <div class="row g-3 mb-4">
-        <div class="col-sm-4"><div class="card h-100"><div class="card-body p-3"><div class="text-muted small">Tồn kho</div><div class="fs-4 fw-semibold">{{ $product->quantity }}</div></div></div></div>
-        <div class="col-sm-4"><div class="card h-100"><div class="card-body p-3"><div class="text-muted small">Giá bán</div><div class="fs-4 fw-semibold">{{ number_format((float) $product->price, 2) }}</div></div></div></div>
-        <div class="col-sm-4"><div class="card h-100"><div class="card-body p-3"><div class="text-muted small">Trạng thái</div><div class="mt-1"><span class="badge {{ $product->status === 'active' ? 'text-bg-success' : ($product->status === 'draft' ? 'text-bg-warning' : 'text-bg-secondary') }}">{{ ['active' => 'Hoạt động', 'inactive' => 'Ngừng hoạt động', 'draft' => 'Bản nháp'][$product->status] }}</span></div></div></div></div>
+
+        <div class="col-sm-6"><div class="card h-100"><div class="card-body p-3"><div class="text-muted small">Giá bán</div><div class="fs-4 fw-semibold">{{ number_format((float) $product->price, 2) }}</div></div></div></div>
+        <div class="col-sm-6"><div class="card h-100"><div class="card-body p-3"><div class="text-muted small">Trạng thái</div><div class="mt-1"><span class="badge {{ $product->status === 'active' ? 'text-bg-success' : ($product->status === 'draft' ? 'text-bg-warning' : 'text-bg-secondary') }}">{{ ['active' => 'Hoạt động', 'inactive' => 'Ngừng hoạt động', 'draft' => 'Bản nháp'][$product->status] }}</span></div></div></div></div>
       </div>
 
       <div class="card mb-4">
         <div class="card-header bg-white py-3"><h2 class="h5 mb-0">Thông tin sản phẩm</h2></div>
         <div class="card-body p-4">
-          <div class="row g-4">
-            <div class="col-sm-6"><div class="text-muted small">Danh mục</div><div class="fw-semibold">{{ $product->category->name }}</div></div>
-            <div class="col-sm-6"><div class="text-muted small">Thương hiệu</div><div class="fw-semibold">{{ $product->brand ?: '—' }}</div></div>
-            <div class="col-sm-6"><div class="text-muted small">Đơn vị</div><div class="fw-semibold">{{ $product->unit }}</div></div>
-            <div class="col-sm-6"><div class="text-muted small">Số lượng tối thiểu</div><div class="fw-semibold">{{ $product->minimum_quantity }}</div></div>
-            <div class="col-sm-6"><div class="text-muted small">Thuế</div><div class="fw-semibold">{{ rtrim(rtrim(number_format((float) $product->tax, 2, '.', ''), '0'), '.') }}%</div></div>
-            <div class="col-sm-6"><div class="text-muted small">Giảm giá</div><div class="fw-semibold">{{ rtrim(rtrim(number_format((float) $product->discount, 2, '.', ''), '0'), '.') }}%</div></div>
-          </div>
+          <div class="text-muted small">Danh mục</div>
+          <div class="fw-semibold">{{ $product->category->name }}</div>
           <hr>
           <div class="text-muted small mb-1">Mô tả</div>
           <p class="mb-0">{{ $product->description ?: 'Chưa có mô tả.' }}</p>

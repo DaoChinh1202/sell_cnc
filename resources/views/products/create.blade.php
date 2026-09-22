@@ -56,13 +56,6 @@
                   @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label for="productQuantity" class="form-label">Số lượng tồn kho</label>
-                  <input type="number" class="form-control @error('quantity') is-invalid @enderror" id="productQuantity" name="quantity" value="{{ old('quantity', 0) }}" min="0" required>
-                  @error('quantity') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6 mb-3">
                   <label for="productCategory" class="form-label">Danh mục</label>
                   <select class="form-select @error('category_id') is-invalid @enderror" id="productCategory" name="category_id" required>
                     <option value="">Chọn danh mục</option>
@@ -71,11 +64,6 @@
                     @endforeach
                   </select>
                   @error('category_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label for="productBrand" class="form-label">Thương hiệu</label>
-                  <input type="text" class="form-control @error('brand') is-invalid @enderror" id="productBrand" name="brand" value="{{ old('brand') }}">
-                  @error('brand') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
               </div>
               <div class="mb-3">

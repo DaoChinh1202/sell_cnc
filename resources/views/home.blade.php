@@ -21,13 +21,6 @@
             </div>
         </section>
 
-        <nav class="cnc-categories container" id="categories" aria-label="Danh mục thiết kế CNC">
-            <a class="cnc-category-chip cnc-category-chip--all" href="{{ route('storefront.products.index') }}">Tất cả mẫu <span aria-hidden="true">↗</span></a>
-            @foreach($categories->where('products_count', '>', 0) as $category)
-                <a class="cnc-category-chip" href="{{ route('storefront.categories.show', $category) }}">{{ $category->name }} <small>{{ $category->products_count }}</small></a>
-            @endforeach
-        </nav>
-
         <section class="cnc-shelf cnc-shelf--new" id="products" aria-labelledby="newest-title">
             <div class="container">
                 <div class="cnc-shelf__heading">
@@ -42,17 +35,35 @@
             </div>
         </section>
 
-        @foreach($categorySections as $category)
-            <section class="cnc-shelf cnc-shelf--category" aria-labelledby="category-{{ $category->id }}-title">
-                <div class="container">
-                    <div class="cnc-shelf__heading">
-                        <div><p class="cnc-kicker">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }} / BỘ SƯU TẬP · {{ $category->products_count }} MẪU</p><h2 id="category-{{ $category->id }}-title">{{ $category->name }}</h2>@if($category->description)<p class="cnc-shelf__description">{{ $category->description }}</p>@endif</div>
-                        <a class="cnc-more" href="{{ route('storefront.categories.show', $category) }}">Xem tất cả <span aria-hidden="true">↗</span></a>
-                    </div>
-                    <div class="cnc-grid">@foreach($category->products as $product) @include('partials.catalog-card', ['product' => $product]) @endforeach</div>
+        <section class="cnc-shelf cnc-shelf--categories" id="categories" aria-labelledby="categories-title">
+            <div class="container">
+                <div class="cnc-shelf__heading">
+                    <div><p class="cnc-kicker">KHÁM PHÁ THEO BỘ SƯU TẬP</p><h2 id="categories-title">Danh mục mẫu CNC<span class="cnc-title-dot">.</span></h2></div>
+                    <a class="cnc-more" href="{{ route('storefront.products.index') }}">Xem tất cả mẫu <span aria-hidden="true">↗</span></a>
                 </div>
-            </section>
-        @endforeach
+                <div class="cnc-category-grid">
+                    @forelse($categories->where('products_count', '>', 0) as $category)
+                        <a class="cnc-category-card" href="{{ route('storefront.categories.show', $category) }}">
+                            <span class="cnc-category-card__image">
+                                @if($category->image)
+                                    <img src="{{ asset('storage/'.$category->image) }}" alt="{{ $category->name }}" loading="lazy" decoding="async" width="600" height="450">
+                                @else
+                                    <span class="cnc-category-card__placeholder" aria-label="Chưa có ảnh danh mục">DH</span>
+                                @endif
+                                <span class="cnc-category-card__open" aria-hidden="true">↗</span>
+                            </span>
+                            <span class="cnc-category-card__body">
+                                <span class="cnc-category-card__count">{{ $category->products_count }} mẫu</span>
+                                <strong>{{ $category->name }}</strong>
+                                @if($category->description)<small>{{ $category->description }}</small>@endif
+                            </span>
+                        </a>
+                    @empty
+                        <div class="cnc-empty"><h3>Danh mục đang được chuẩn bị</h3><p>Các bộ sưu tập mẫu CNC sẽ sớm được cập nhật.</p></div>
+                    @endforelse
+                </div>
+            </div>
+        </section>
     </main>
     @include('partials.catalog-footer')
 </div>

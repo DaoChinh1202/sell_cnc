@@ -26,6 +26,17 @@
     </div>
   @endif
 
+  @if ($errors->any())
+    <div class="alert alert-danger" role="alert">
+      <strong>Không thể lưu danh mục.</strong>
+      <ul class="mb-0 mt-2">
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+  @endif
+
   <div class="row g-3 mb-4">
     <div class="col-sm-6 col-xl-3">
       <div class="card h-100"><div class="card-body p-4">
@@ -70,7 +81,16 @@
         <tbody>
           @forelse ($categories as $category)
             <tr>
-              <td class="ps-4 fw-semibold">{{ $category->name }}</td>
+              <td class="ps-4">
+                <div class="d-flex align-items-center gap-3">
+                  @if ($category->image)
+                    <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($category->image) }}" alt="{{ $category->name }}" class="rounded object-fit-cover flex-shrink-0" width="48" height="48" loading="lazy">
+                  @else
+                    <span class="d-inline-flex align-items-center justify-content-center rounded bg-light text-muted flex-shrink-0" style="width: 48px; height: 48px;" role="img" aria-label="Chưa có ảnh"><i class="ti ti-photo-off" aria-hidden="true"></i></span>
+                  @endif
+                  <span class="fw-semibold">{{ $category->name }}</span>
+                </div>
+              </td>
               <td><code>{{ $category->slug }}</code></td>
               <td class="text-wrap" style="min-width: 220px;">{{ $category->description ?: '—' }}</td>
               <td>{{ $category->products_count }}</td>
@@ -104,7 +124,7 @@
 
   <div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
     <div class="modal-dialog"><div class="modal-content">
-      <form action="{{ route('categories.store') }}" method="POST">
+      <form action="{{ route('categories.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="modal-header"><h2 class="modal-title fs-5" id="createCategoryModalLabel">Thêm danh mục</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button></div>
         <div class="modal-body">
@@ -118,7 +138,7 @@
   @foreach ($categories as $category)
     <div class="modal fade" id="editCategoryModal{{ $category->id }}" tabindex="-1" aria-labelledby="editCategoryModalLabel{{ $category->id }}" aria-hidden="true">
       <div class="modal-dialog"><div class="modal-content">
-        <form action="{{ route('categories.update', $category) }}" method="POST">
+        <form action="{{ route('categories.update', $category) }}" method="POST" enctype="multipart/form-data">
           @csrf
           @method('PUT')
           <div class="modal-header"><h2 class="modal-title fs-5" id="editCategoryModalLabel{{ $category->id }}">Chỉnh sửa danh mục</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button></div>

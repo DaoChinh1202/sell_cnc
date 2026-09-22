@@ -34,10 +34,7 @@
           <th class="ps-4">Ảnh / sản phẩm</th>
           <th>Mã SP</th>
           <th>Danh mục</th>
-          <th>Thương hiệu</th>
           <th>Giá</th>
-          <th>Đơn vị</th>
-          <th>Số lượng</th>
           <th>Trạng thái</th>
           <th class="pe-4 text-end">Thao tác</th>
         </tr>
@@ -53,10 +50,7 @@
             </td>
             <td><code>{{ $product->sku }}</code></td>
             <td>{{ $product->category->name }}</td>
-            <td>{{ $product->brand ?: '—' }}</td>
             <td>{{ number_format((float) $product->price, 2) }}</td>
-            <td>{{ $product->unit }}</td>
-            <td>{{ $product->quantity }}</td>
             <td>
               <span class="badge {{ $product->status === 'active' ? 'text-bg-success' : ($product->status === 'draft' ? 'text-bg-warning' : 'text-bg-secondary') }}">
                 {{ ['active' => 'Hoạt động', 'inactive' => 'Ngừng hoạt động', 'draft' => 'Bản nháp'][$product->status] }}
@@ -69,7 +63,7 @@
           </tr>
         @empty
           <tr>
-            <td colspan="9" class="text-center text-muted py-5">
+            <td colspan="6" class="text-center text-muted py-5">
               {{ $search !== '' ? 'Không tìm thấy sản phẩm phù hợp.' : 'Chưa có sản phẩm nào. Hãy thêm sản phẩm đầu tiên.' }}
             </td>
           </tr>

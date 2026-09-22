@@ -1,8 +1,8 @@
 @extends('layouts.storefront')
 
 @php
-    $categoryName = data_get($category, 'name') ?: 'Danh mục CNC';
-    $categoryDescription = data_get($category, 'description');
+    $categoryName = $category->name;
+    $categoryDescription = $category->description;
     $productCount = method_exists($products, 'total') ? $products->total() : collect($products)->count();
 @endphp
 
@@ -46,8 +46,8 @@
             @if(collect($products)->isEmpty())
                 <div class="empty-state category-page__empty"><span class="empty-state__mark">◌</span><p class="eyebrow">Danh mục đang được cập nhật</p><h2>Chưa có mẫu trong bộ sưu tập</h2><p>Những thiết kế mới sẽ sớm được bổ sung. Bạn có thể xem các danh mục khác để tiếp tục tham khảo.</p><a class="text-link" href="{{ route('home') }}#categories">Xem danh mục khác ↗</a></div>
             @else
-                <div class="category-product-grid">@foreach($products as $product)@php $image = data_get($product, 'image'); $name = data_get($product, 'name') ?: 'Mẫu thiết kế CNC'; $productCategory = data_get($product, 'category.name') ?: $categoryName; $price = data_get($product, 'price'); $imageUrl = $image ? (str_starts_with($image, 'http') ? $image : asset('storage/' . $image)) : asset('assets/storefront/prod-nislconuat.jpg'); $productUrl = route('storefront.products.show', $product); @endphp
-                     <article class="category-product-card"><a class="category-product-card__image" href="{{ $productUrl }}" aria-label="Xem chi tiết {{ $name }}"><img src="{{ $imageUrl }}" alt="{{ $name }}" loading="lazy"></a><div class="category-product-card__info"><p>{{ $productCategory }}</p><h2><a href="{{ $productUrl }}">{{ $name }}</a></h2><strong>{{ $price !== null ? number_format((float) $price, 0, ',', '.') . 'đ' : 'Liên hệ' }}</strong><a class="category-product-card__link" href="{{ $productUrl }}">Xem chi tiết <span>↗</span></a></div></article>
+                <div class="category-product-grid">@foreach($products as $product)@php $image = $product->image; $name = $product->name; $productCategory = $product->category?->name; $price = $product->price; $imageUrl = $image ? (str_starts_with($image, 'http') ? $image : asset('storage/' . $image)) : null; $productUrl = route('storefront.products.show', $product); @endphp
+                     <article class="category-product-card"><a class="category-product-card__image" href="{{ $productUrl }}" aria-label="Xem chi tiết {{ $name }}">@if($imageUrl)<img src="{{ $imageUrl }}" alt="{{ $name }}" loading="lazy">@else<span class="cnc-card__placeholder">DH<small>Ảnh đang cập nhật</small></span>@endif</a><div class="category-product-card__info"><p>{{ $productCategory }}</p><h2><a href="{{ $productUrl }}">{{ $name }}</a></h2><strong>{{ $price !== null ? number_format((float) $price, 0, ',', '.') . 'đ' : 'Liên hệ' }}</strong><a class="category-product-card__link" href="{{ $productUrl }}">Xem chi tiết <span>↗</span></a></div></article>
                  @endforeach</div>
                  @if(method_exists($products, 'links'))<div class="category-pagination">{{ $products->links() }}</div>@endif
             @endif

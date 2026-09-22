@@ -17,14 +17,10 @@ class StorefrontController extends Controller
             ->orderBy('name')
             ->get();
 
-        $categorySections = $categories->where('products_count', '>', 0)->take(8)->values();
-        $categorySections->load(['products' => fn ($query) => $query
-            ->where('status', 'active')->with('category')->latest()->orderByDesc('id')->limit(8)]);
-
         $newestProducts = Product::query()->visible()->with('category')
             ->latest()->orderByDesc('id')->limit(4)->get();
 
-        return view('home', compact('categories', 'categorySections', 'newestProducts'));
+        return view('home', compact('categories', 'newestProducts'));
     }
 
     public function search(Request $request): View
