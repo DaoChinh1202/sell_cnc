@@ -6,10 +6,9 @@
     @include('partials.catalog-header')
     <main id="top">
         <section class="cnc-intro" aria-labelledby="catalog-title">
-            <div class="container">
-                <p class="cnc-kicker">Ý TƯỞNG CỦA BẠN. ĐƯỜNG NÉT CỦA CHÚNG TÔI.</p>
-                <h1 id="catalog-title">Khám phá kho mẫu<br>thiết kế <span>CNC.</span></h1>
-                <p class="cnc-intro__description">Tìm mẫu phù hợp cho từng ý tưởng — từ nội thất,<br class="cnc-desktop-break"> hoa văn đến phù điêu trang trí.</p>
+            <h1 id="catalog-title" class="sr-only">Duy Hoàng — Kho mẫu thiết kế CNC</h1>
+            <div class="cnc-intro__art" style="background-image: url('{{ asset('assets/images/background_header.png') }}');" aria-hidden="true"></div>
+            <div class="cnc-intro__search">
                 <form class="cnc-search" action="{{ route('storefront.products.index') }}" method="get" role="search">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
                     <label class="sr-only" for="home-search">Tìm mẫu theo tên hoặc mã sản phẩm</label>
