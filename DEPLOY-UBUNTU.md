@@ -365,8 +365,7 @@ REDIS_HOST=127.0.0.1
 REDIS_PASSWORD=null
 REDIS_PORT=6379
 
-IMAGE_WATERMARK_LOGO_COVER=true
-IMAGE_WATERMARK_LOGO_OPACITY=40
+IMAGE_WATERMARK_PHONE=0869252228
 IMAGE_WATERMARK_FONT=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
 ```
 
@@ -382,7 +381,7 @@ Thay `IP_VPS` bằng IP public thật. `APP_URL` khai báo URL ứng dụng, kh�
 
 Không dùng hostname `mysql`, `redis`, `app` của Docker. Dùng port local MySQL `3306`, không phải port host Docker `3308`.
 
-Không đặt `IMAGE_WATERMARK_LOGO` thành đường dẫn macOS hoặc `/var/www/html/...`. Có thể bỏ biến này để dùng mặc định trong `config/images.php`; đảm bảo file `public/assets/images/logo-duy-hoang-gold-brown.png` được đưa lên cùng source.
+Ảnh sản phẩm upload mới được chèn số `0869252228` theo góc 30°, lặp 3 lần từ trên xuống dưới. `IMAGE_WATERMARK_PHONE` phải giữ số 0 đầu; các biến logo và `IMAGE_WATERMARK_TEXT` cũ không còn được dùng. Sau khi sửa `.env`, chạy `php artisan config:cache`. Ảnh đã lưu không tự đổi watermark; cần upload lại ảnh gốc để thay watermark cũ, không upload lại bản đã có logo. Ảnh danh mục không chịu ảnh hưởng.
 
 ## 8. Quyền truy cập source và runtime
 
@@ -727,7 +726,7 @@ redis-cli ping
 | --- | --- |
 | 502 Bad Gateway | PHP-FPM đang chạy, đúng socket, ACL cho user caddy |
 | 500 Laravel | Laravel log, APP_KEY, DB, extension PHP, quyền storage/cache |
-| Upload lỗi watermark | GD WebP/FreeType, font DejaVu, logo PNG, quyền ghi storage |
+| Upload lỗi watermark | GD WebP/FreeType, font DejaVu, số điện thoại watermark, quyền ghi storage |
 | Ảnh `/storage` trả 403/404 | storage link đúng đường dẫn, file tồn tại, quyền đọc/traverse của Caddy |
 | Upload quá lớn/413 | upload_max_filesize, post_max_size, validation Laravel |
 | CSS/JS không tải | npm run build, manifest, xóa public/hot, APP_URL |
