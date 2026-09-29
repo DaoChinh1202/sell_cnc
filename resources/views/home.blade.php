@@ -7,8 +7,13 @@
     <main id="top">
         <section class="cnc-intro" aria-labelledby="catalog-title">
             <h1 id="catalog-title" class="sr-only">Duy Hoàng — Kho mẫu thiết kế CNC</h1>
-            <div class="cnc-intro__art" style="background-image: url('{{ asset('assets/images/background_header.png') }}');" aria-hidden="true"></div>
-            <div class="cnc-intro__search">
+            <div class="cnc-intro__art" style="background-image: url('{{ asset('assets/images/banner.png') }}');" aria-hidden="true"></div>
+        </section>
+
+        <section class="cnc-home-search" aria-labelledby="home-search-title">
+            <div class="container">
+                <h2 id="home-search-title">Tìm mẫu cho xưởng của bạn</h2>
+                <p class="cnc-home-search__description">Tra cứu nhanh theo tên hoặc mã sản phẩm</p>
                 <form class="cnc-search" action="{{ route('storefront.products.index') }}" method="get" role="search">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
                     <label class="sr-only" for="home-search">Tìm mẫu theo tên hoặc mã sản phẩm</label>
@@ -16,7 +21,7 @@
                     <button type="submit">Tìm mẫu <span aria-hidden="true">→</span></button>
                 </form>
                 @error('q')<p class="cnc-error" role="alert">{{ $message }}</p>@enderror
-                <p class="cnc-intro__note">Khám phá thiết kế. Xem chi tiết. Chọn mẫu cho xưởng.</p>
+
             </div>
         </section>
 
