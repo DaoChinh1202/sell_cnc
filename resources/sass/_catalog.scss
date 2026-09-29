@@ -88,6 +88,14 @@
 .cnc-search--light { border: 1px solid #dfd2bf; box-shadow: none; }
 .cnc-result-count { color: #82715d; font-size: 12px; margin: 25px 0; overflow-wrap: anywhere; }
 .cnc-error { color: #bb5030; }
+@media (max-width: 1000px) {
+    .cnc-intro__art {
+        min-height: 0;
+        aspect-ratio: 1983 / 793;
+        background-size: contain;
+        background-position: center;
+    }
+}
 @media (max-width: 800px) {
     .cnc-catalog .container { width: calc(100% - 36px); }
     .cnc-header__inner { min-height: 76px; gap: 14px; }
