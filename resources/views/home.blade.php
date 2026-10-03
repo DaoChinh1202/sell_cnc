@@ -7,8 +7,8 @@
     <main id="top">
         <div class="cnc-intro">
             <picture>
-                <source type="image/webp" srcset="{{ asset('assets/images/banner-640.webp') }} 640w, {{ asset('assets/images/banner-1280.webp') }} 1280w, {{ asset('assets/images/banner-1983.webp') }} 1983w" sizes="100vw">
-                <img class="cnc-intro__art" src="{{ asset('assets/images/banner.png') }}" alt="Kho mẫu CNC 3D với hoa văn cửa và phù điêu trang trí" width="1983" height="793" fetchpriority="high">
+                <source type="image/webp" srcset="{{ asset('assets/images/khomau3d-banner-640.webp') }} 640w, {{ asset('assets/images/khomau3d-banner-1280.webp') }} 1280w, {{ asset('assets/images/khomau3d-banner-1983.webp') }} 1983w" sizes="100vw">
+                <img class="cnc-intro__art" src="{{ asset('assets/images/khomau3d-banner.png') }}" alt="Kho mẫu CNC 3D với hoa văn cửa và phù điêu trang trí" width="1983" height="793" fetchpriority="high">
             </picture>
         </div>
 

@@ -88,7 +88,12 @@ class StorefrontSeoTest extends TestCase
                 $this->assertSame('high', $this->value($xpath, '//img[@class="cnc-intro__art"]/@fetchpriority'));
                 $this->assertSame('image/webp', $this->value($xpath, '//picture/source/@type'));
                 $this->assertSame('100vw', $this->value($xpath, '//picture/source/@sizes'));
-        $this->assertSame(asset('assets/images/banner.png'), $this->value($xpath, '//meta[@property="og:image"]/@content'));
+        $this->assertSame(asset('assets/images/khomau3d-banner.png'), $this->value($xpath, '//meta[@property="og:image"]/@content'));
+                $this->assertSame(asset('assets/images/khomau3d-banner.png'), $this->value($xpath, '//img[@class="cnc-intro__art"]/@src'));
+                $this->assertSame(
+                    asset('assets/images/khomau3d-banner-640.webp').' 640w, '.asset('assets/images/khomau3d-banner-1280.webp').' 1280w, '.asset('assets/images/khomau3d-banner-1983.webp').' 1983w',
+                    $this->value($xpath, '//picture/source/@srcset'),
+                );
         $this->assertSame('summary_large_image', $this->value($xpath, '//meta[@name="twitter:card"]/@content'));
         $graph = $this->graph($xpath);
         $this->assertSame('khomau3d', $graph['Organization']['name']);

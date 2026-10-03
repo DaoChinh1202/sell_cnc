@@ -113,7 +113,7 @@ class StorefrontSeo
     private static function image(?string $path): string
     {
         if (! $path) {
-            return asset('assets/images/banner.png');
+            return asset('assets/images/khomau3d-banner.png');
         }
 
         return preg_match('~^https?://~i', $path) ? $path : asset('storage/'.ltrim($path, '/'));

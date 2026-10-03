@@ -17,7 +17,7 @@
 
 ## Cập nhật trên VPS
 
-1. Cập nhật source và đưa các ảnh `public/assets/images/banner-*.webp` lên server.
+1. Cập nhật source và đưa bộ ảnh `public/assets/images/khomau3d-banner.png`, `public/assets/images/khomau3d-banner-*.webp` lên server.
 2. Build frontend bằng `npm ci` rồi `npm run build`, hoặc upload toàn bộ `public/build/` đã build ở local.
 3. Đảm bảo file tĩnh `public/robots.txt` cũ đã được xóa theo thay đổi trong Git. Nếu upload thủ công và còn file này, web server có thể phục vụ file cũ thay vì route động.
 4. Đặt `APP_NAME=khomau3d` và `APP_URL` bằng URL HTTPS của tên miền chính thức trong `.env`.
@@ -52,4 +52,4 @@ URL tuyệt đối dùng bộ tạo URL của Laravel, thường lấy scheme/ho
 - Viết mô tả riêng, chính xác cho từng danh mục/sản phẩm; nhập thông số định dạng file, kích thước hoặc phần mềm tương thích chỉ khi có dữ liệu thực tế.
 - Theo dõi crawl/index và từ khóa trong Search Console. Không có cam kết thời điểm hoặc thứ hạng SEO.
 - Sitemap hiện là một file. Nếu vượt 50.000 URL hoặc 50 MB XML chưa nén, cần chia sitemap và thêm sitemap index.
-- Nếu đổi ảnh `banner.png` về sau, cần tạo lại các bản WebP đi kèm để desktop/mobile không hiển thị nội dung khác nhau.
+- Nếu đổi ảnh `khomau3d-banner.png` về sau, cần tạo lại các bản WebP đi kèm để desktop/mobile không hiển thị nội dung khác nhau.
