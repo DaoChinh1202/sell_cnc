@@ -14,7 +14,7 @@ class AdminUserSeeder extends Seeder
         $accounts = [
             [
                 'username' => 'duyhoangadmin',
-                'name' => 'Duy Hoàng Admin',
+                'name' => 'khomau3d',
                 'password' => 'duyhoang88@!',
             ],
         ];

@@ -1,16 +1,16 @@
 @extends('layouts.auth')
 
-@section('title', 'Đăng nhập quản trị · Duy Hoàng CNC')
+@section('title', 'Đăng nhập quản trị · khomau3d CNC')
 @section('content')
 <div class="container d-flex align-items-center justify-content-center min-vh-100 py-4">
     <div class="card" style="max-width:420px; width:100%;">
         <div class="card-body p-4 p-sm-5">
             <div class="text-center mb-4">
                 <a href="{{ route('home') }}" class="mb-3 d-inline-block">
-                    <img src="{{ asset('assets/images/logo-duy-hoang-gold-brown.svg') }}" alt="Duy Hoàng CNC" width="88" height="88">
+                    <img src="{{ asset('assets/images/khomau3d_logo_no_tagline.svg') }}" alt="Kho mẫu 3D" width="132" height="88">
                 </a>
                 <h1 class="card-title h5">Đăng nhập quản trị</h1>
-                <p class="small text-muted">Quản lý kho mẫu thiết kế CNC Duy Hoàng.</p>
+                <p class="small text-muted">Quản lý kho mẫu thiết kế CNC khomau3d.</p>
             </div>
 
             @if ($errors->any())

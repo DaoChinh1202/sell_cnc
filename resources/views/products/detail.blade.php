@@ -11,13 +11,13 @@
 
 @endphp
 
-@section('title', $name . ' — Duy Hoàng - Kho mẫu CNC')
+@section('title', $name . ' — khomau3d - Kho mẫu CNC')
 
 @section('content')
 <header class="site-header">
     <div class="container site-header__main">
         <button class="menu-toggle" aria-label="Mở menu">☰</button>
-        <a href="{{ route('home') }}" class="brand"><img src="{{ asset('assets/images/logo-duy-hoang-gold-brown.svg') }}" alt="Duy Hoàng CNC"></a>
+        <a href="{{ route('home') }}" class="brand"><img src="{{ asset('assets/images/khomau3d_logo_no_tagline.svg') }}" alt="Kho mẫu 3D"></a>
         <form class="search" method="get" action="{{ route('storefront.products.index') }}"><input type="search" name="q" maxlength="100" placeholder="Tìm kiếm mẫu CNC..." aria-label="Tìm kiếm"><button aria-label="Tìm kiếm">⌕</button></form>
         <div class="header-tools"><a href="#" aria-label="Yêu thích">♡ <small>Yêu thích</small></a><a href="#" aria-label="Tài khoản">♙ <small>Tài khoản</small></a></div>
     </div>
@@ -26,7 +26,7 @@
 
 <main class="product-detail">
     <div class="container">
-        <nav class="product-detail__breadcrumb" aria-label="Đường dẫn"><a href="{{ route('home') }}">Trang chủ</a><span>/</span><a href="{{ route('home') }}#products">Thư viện mẫu</a><span>/</span><strong>{{ $name }}</strong></nav>
+        <nav class="product-detail__breadcrumb" aria-label="Đường dẫn"><a href="{{ route('home') }}">Trang chủ</a><span>/</span>@if($product->category?->status === 'active')<a href="{{ route('storefront.categories.show', $product->category) }}">{{ $category }}</a><span>/</span>@endif<strong>{{ $name }}</strong></nav>
         <div class="product-detail__layout">
             <figure class="product-detail__gallery">@if($imageUrl)<img src="{{ $imageUrl }}" alt="{{ $name }}">@else<span class="cnc-card__placeholder">DH<small>Ảnh đang cập nhật</small></span>@endif</figure>
             <section class="product-detail__summary" aria-labelledby="product-title">
@@ -43,6 +43,6 @@
         </div>
     </div>
 </main>
-<footer class="footer product-detail__footer"><div class="container footer__bottom"><span>© 2024 Duy Hoàng - Kho mẫu CNC. Thủ công với yêu thương.</span><a href="{{ route('home') }}">Quay lại trang chủ ↗</a></div></footer>
+<footer class="footer product-detail__footer"><div class="container footer__bottom"><span>© 2024 khomau3d - Kho mẫu CNC. Thủ công với yêu thương.</span><a href="{{ route('home') }}">Quay lại trang chủ ↗</a></div></footer>
 @include('partials.storefront-contact')
 @endsection

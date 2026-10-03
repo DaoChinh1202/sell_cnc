@@ -1,8 +1,8 @@
 <section class="cnc-contact" id="contact">
     <div class="container cnc-contact__inner">
-        <div><p class="cnc-kicker">ĐỒNG HÀNH CÙNG XƯỞNG CỦA BẠN</p><h2>Bạn đang tìm một mẫu cụ thể?</h2><p>Gửi tên mẫu hoặc hình tham khảo để Duy Hoàng hỗ trợ tìm thiết kế phù hợp.</p></div>
+        <div><p class="cnc-kicker">ĐỒNG HÀNH CÙNG XƯỞNG CỦA BẠN</p><h2>Bạn đang tìm một mẫu cụ thể?</h2><p>Gửi tên mẫu hoặc hình tham khảo để khomau3d hỗ trợ tìm thiết kế phù hợp.</p></div>
         <a href="https://zalo.me/0869252228" target="_blank" rel="noopener noreferrer" class="cnc-cta">Trao đổi qua Zalo <span aria-hidden="true">↗</span></a>
     </div>
 </section>
-<footer class="cnc-footer"><div class="container"><span>© {{ date('Y') }} Duy Hoàng · Kho mẫu CNC</span><a href="tel:0869252228">Liên hệ: 0869 252 228</a><a href="{{ route('home') }}">Về trang chủ ↑</a></div></footer>
+<footer class="cnc-footer"><div class="container"><span>© {{ date('Y') }} khomau3d · Kho mẫu CNC</span><a href="tel:0869252228">Liên hệ: 0869 252 228</a><a href="{{ route('home') }}">Về trang chủ ↑</a></div></footer>
 @include('partials.storefront-contact')

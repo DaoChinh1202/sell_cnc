@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SeoController;
 use App\Http\Controllers\StorefrontController;
 use App\Models\Category;
 use App\Models\Product;
@@ -15,6 +16,9 @@ use Illuminate\Validation\Rule;
 | Storefront — trang khách hàng
 |--------------------------------------------------------------------------
 */
+Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
+
 Route::get('/', [StorefrontController::class, 'index'])->name('home');
 Route::get('/products', [StorefrontController::class, 'search'])->name('storefront.products.index');
 

@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Duy Hoàng — khám phá mẫu thiết kế CNC, hoa văn, nội thất và phù điêu. Tìm mẫu theo tên hoặc mã sản phẩm.">
-    <title>@yield('title', 'Duy Hoàng - Kho mẫu CNC — Vẻ đẹp lưu dấu')</title>
+    @include('partials.seo')
     @include('partials.favicon')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

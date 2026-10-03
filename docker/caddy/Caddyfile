@@ -1,4 +1,4 @@
-http://localhost {
+:80 {
 
     root * /var/www/html/public
 

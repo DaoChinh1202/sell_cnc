@@ -8,7 +8,7 @@
       <div class="text-center">
         <div class="mb-4">
           <a href="{{ (auth()->user()?->is_admin ? route('dashboard') : route('home')) }}" class="d-inline-block mb-4">
-            <img src="{{ asset('assets/images/logo-duy-hoang-gold-brown.svg') }}" alt="Duy Hoàng CNC" width="88" height="88">
+            <img src="{{ asset('assets/images/khomau3d_logo_no_tagline.svg') }}" alt="Kho mẫu 3D" width="132" height="88">
           </a>
         </div>
 

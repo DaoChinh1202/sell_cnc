@@ -1,19 +1,21 @@
 @extends('layouts.storefront')
-@section('title', 'Duy Hoàng — Kho mẫu thiết kế CNC')
+@section('title', 'Kho mẫu CNC 3D, hoa văn và phù điêu | khomau3d')
 
 @section('content')
 <div class="cnc-catalog">
     @include('partials.catalog-header')
     <main id="top">
-        <section class="cnc-intro" aria-labelledby="catalog-title">
-            <h1 id="catalog-title" class="sr-only">Duy Hoàng — Kho mẫu thiết kế CNC</h1>
-            <div class="cnc-intro__art" style="background-image: url('{{ asset('assets/images/banner.png') }}');" aria-hidden="true"></div>
-        </section>
+        <div class="cnc-intro">
+            <picture>
+                <source type="image/webp" srcset="{{ asset('assets/images/banner-640.webp') }} 640w, {{ asset('assets/images/banner-1280.webp') }} 1280w, {{ asset('assets/images/banner-1983.webp') }} 1983w" sizes="100vw">
+                <img class="cnc-intro__art" src="{{ asset('assets/images/banner.png') }}" alt="Kho mẫu CNC 3D với hoa văn cửa và phù điêu trang trí" width="1983" height="793" fetchpriority="high">
+            </picture>
+        </div>
 
         <section class="cnc-home-search" aria-labelledby="home-search-title">
             <div class="container">
-                <h2 id="home-search-title">Tìm mẫu cho xưởng của bạn</h2>
-                <p class="cnc-home-search__description">Tra cứu nhanh theo tên hoặc mã sản phẩm</p>
+                <h1 id="home-search-title">Kho mẫu CNC 3D dành cho xưởng điêu khắc</h1>
+                <p class="cnc-home-search__description">Tìm mẫu cho xưởng của bạn — khám phá hoa văn, phù điêu và thiết kế nội thất theo tên hoặc mã sản phẩm.</p>
                 <form class="cnc-search" action="{{ route('storefront.products.index') }}" method="get" role="search">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
                     <label class="sr-only" for="home-search">Tìm mẫu theo tên hoặc mã sản phẩm</label>
@@ -34,7 +36,7 @@
                 @if($newestProducts->isNotEmpty())
                     <div class="cnc-grid">@foreach($newestProducts as $product) @include('partials.catalog-card', ['product' => $product]) @endforeach</div>
                 @else
-                    <div class="cnc-empty"><h3>Thư viện đang được chuẩn bị</h3><p>Các mẫu thiết kế CNC sẽ sớm được cập nhật. Liên hệ Duy Hoàng nếu bạn cần tìm mẫu cụ thể.</p><a class="cnc-more" href="#contact">Liên hệ hỗ trợ ↗</a></div>
+                    <div class="cnc-empty"><h3>Thư viện đang được chuẩn bị</h3><p>Các mẫu thiết kế CNC sẽ sớm được cập nhật. Liên hệ khomau3d nếu bạn cần tìm mẫu cụ thể.</p><a class="cnc-more" href="#contact">Liên hệ hỗ trợ ↗</a></div>
                 @endif
             </div>
         </section>

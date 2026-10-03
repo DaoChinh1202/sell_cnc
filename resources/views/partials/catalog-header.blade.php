@@ -1,8 +1,8 @@
 <header class="cnc-header">
     <div class="container cnc-header__inner">
-        <a class="cnc-brand" href="{{ route('home') }}" aria-label="Duy Hoàng CNC — Trang chủ">
-            <img src="{{ asset('assets/images/logo-duy-hoang-gold-brown.svg') }}" alt="" width="64" height="64">
-            <span>DUY HOÀNG<small>THƯ VIỆN THIẾT KẾ CNC</small></span>
+        <a class="cnc-brand" href="{{ route('home') }}" aria-label="khomau3d CNC — Trang chủ">
+            <img src="{{ asset('assets/images/khomau3d_logo_no_tagline.svg') }}" alt="" width="64" height="64">
+            <span>khomau3d<small>THƯ VIỆN THIẾT KẾ CNC</small></span>
         </a>
         <nav class="cnc-nav" aria-label="Điều hướng chính">
             <a href="{{ route('storefront.products.index') }}" @if(request()->routeIs('storefront.products.index')) aria-current="page" @endif>Kho mẫu</a>

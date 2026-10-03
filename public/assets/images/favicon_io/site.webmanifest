@@ -1,14 +1,14 @@
 {
-  "name": "Duy Hoàng - Kho mẫu CNC",
-  "short_name": "Duy Hoàng CNC",
+  "name": "khomau3d",
+  "short_name": "khomau3d",
   "icons": [
     {
-      "src": "android-chrome-192x192.png?v=duy-hoang-1",
+      "src": "android-chrome-192x192.png?v=khomau3d-a1ba79a9-1",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "android-chrome-512x512.png?v=duy-hoang-1",
+      "src": "android-chrome-512x512.png?v=khomau3d-a1ba79a9-1",
       "sizes": "512x512",
       "type": "image/png"
     }

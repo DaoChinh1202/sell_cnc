@@ -72,6 +72,9 @@ class StorefrontSearchTest extends TestCase
             ->assertSee('name="q"', false)
             ->assertSeeInOrder(['cnc-intro__art', 'cnc-home-search', 'id="products"'], false)
             ->assertSee('Tìm mẫu cho xưởng của bạn')
+            ->assertSee('khomau3d')
+            ->assertDontSee('Duy Hoàng')
+            ->assertDontSee('DUY HOÀNG')
             ->assertDontSee('cnc-intro__search', false)
             ->assertViewHas('categories', fn ($categories) => $categories->count() === 3
                 && $categories->firstWhere('slug', 'chairs')->products_count === 10

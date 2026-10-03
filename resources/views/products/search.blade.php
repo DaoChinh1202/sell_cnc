@@ -1,5 +1,5 @@
 @extends('layouts.storefront')
-@section('title', ($search !== '' ? 'Tìm mẫu: '.$search : 'Tất cả mẫu CNC').' — Duy Hoàng')
+@section('title', ($search !== '' ? 'Tìm mẫu: '.$search : 'Tất cả mẫu CNC').' — khomau3d')
 @section('content')
 <div class="cnc-catalog">
     @include('partials.catalog-header')

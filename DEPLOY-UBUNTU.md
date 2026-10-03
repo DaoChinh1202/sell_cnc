@@ -1,4 +1,4 @@
-# Deploy Duy Hoàng - Kho mẫu CNC trên Ubuntu 24.04
+# Deploy khomau3d trên Ubuntu 24.04
 
 Hướng dẫn cài trực tiếp trên VPS, **không sử dụng Docker**, đăng nhập bằng **root**. Chạy lần lượt từng bước; nếu lệnh báo lỗi, dừng và xử lý trước khi tiếp tục. Các giá trị domain, repository và mật khẩu mẫu phải được thay bằng giá trị thật.
 
@@ -339,7 +339,7 @@ nano .env
 Chỉ tạo `.env` khi cài mới; không ghi đè `.env` production đang có. `.env.example` chứa `APP_KEY` mẫu: xóa giá trị đó khi tạo database mới, hoặc dùng `APP_KEY` cũ khi chuyển dữ liệu. Ví dụ cấu hình (thay domain/password):
 
 ```dotenv
-APP_NAME="Duy Hoàng - Kho mẫu CNC"
+APP_NAME="khomau3d"
 APP_ENV=production
 APP_KEY=
 APP_DEBUG=false
@@ -493,7 +493,7 @@ runuser -u www-data -- test -w /var/www/sell_cnc/storage/framework/views
 runuser -u www-data -- test -w /var/www/sell_cnc/bootstrap/cache
 runuser -u www-data -- test ! -w /var/www/sell_cnc/routes/web.php
 runuser -u caddy -- test -r /var/www/sell_cnc/public/build/manifest.json
-runuser -u caddy -- test -r /var/www/sell_cnc/public/assets/images/logo-duy-hoang-gold-brown.png
+runuser -u caddy -- test -r /var/www/sell_cnc/public/assets/images/khomau3d_logo_no_tagline.svg
 runuser -u caddy -- test -w /run/php/php8.4-fpm.sock
 runuser -u caddy -- test ! -r /var/www/sell_cnc/.env
 runuser -u caddy -- test ! -r /var/www/sell_cnc/bootstrap/cache/config.php
