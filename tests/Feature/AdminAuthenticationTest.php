@@ -71,6 +71,23 @@ class AdminAuthenticationTest extends TestCase
         $this->get('/admin/signin')->assertRedirect(route('dashboard'));
     }
 
+    public function test_dashboard_keeps_navigation_without_demo_content(): void
+    {
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Tổng quan')
+            ->assertSee('Kho hàng')
+            ->assertSee('Danh mục')
+            ->assertDontSee('Nội dung chính của bạn ở đây')
+            ->assertDontSee('Tổng doanh số')
+            ->assertDontSee('Tổng nhập hàng')
+            ->assertDontSee('Tổng chi phí')
+            ->assertDontSee('salesPurchaseChart', false)
+            ->assertDontSee('customerChart', false)
+            ->assertDontSee('assets/images/product-', false);
+    }
+
     public function test_login_rejects_invalid_passwords_unknown_users_and_non_admins(): void
     {
         $admin = User::factory()->admin()->create();
