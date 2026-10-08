@@ -28,7 +28,7 @@ class AdminAuthenticationTest extends TestCase
     {
         foreach (Route::getRoutes() as $route) {
             if (! str_starts_with($route->uri(), 'admin')
-                || in_array($route->getName(), ['signin', 'signin.store', 'logout'])) {
+                || in_array($route->getName(), ['signin', 'signin.store', 'logout', 'password.request', 'password.email', 'password.reset', 'password.update'])) {
                 continue;
             }
 

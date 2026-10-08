@@ -21,7 +21,7 @@ services:
     container_name: laravel-caddy
     ports:
       - "83:80"
-      - "443:443"
+      - "8443:443"
     volumes:
       - .:/var/www/html
       - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AdminPasswordController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SeoController;
@@ -84,11 +85,15 @@ Route::prefix('admin')->group(function () {
     Route::middleware('guest')->group(function () {
         Route::view('/signin', 'auth.signin')->name('signin');
         Route::post('/signin', [AdminAuthController::class, 'store'])->name('signin.store');
+        Route::view('/forgot-password', 'auth.forgot-password')->name('password.request');
+        Route::post('/forgot-password', [AdminPasswordController::class, 'sendLink'])->middleware('throttle:5,1')->name('password.email');
+        Route::get('/reset-password/{token}', [AdminPasswordController::class, 'resetForm'])->name('password.reset');
+        Route::post('/reset-password', [AdminPasswordController::class, 'reset'])->middleware('throttle:6,1')->name('password.update');
     });
     Route::post('/logout', [AdminAuthController::class, 'destroy'])->middleware('auth')->name('logout');
 });
 
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+Route::prefix('admin')->middleware(['auth', 'auth.session', 'admin'])->group(function () {
     Route::view('/', 'dashboard', ['navActive' => 'dashboard'])->name('dashboard');
     Route::get('/inventory', [ProductController::class, 'index'])->name('inventory');
     Route::get('/create-product', [ProductController::class, 'create'])->name('products.create');

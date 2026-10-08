@@ -474,6 +474,83 @@ Không chạy `php artisan db:seed` không có `--class` trên dữ liệu thậ
 
 Khi cập nhật VPS đã có source cũ, chạy `php artisan migrate --force` và seeder riêng trên, sau đó tạo lại cache theo mục 10. Không tạo lại `APP_KEY` và không xóa database.
 
+### Khôi phục mật khẩu quản trị qua email
+
+Sau khi cập nhật source có tính năng này, gắn email thật cho tài khoản admin đã tồn tại. Chạy bằng root và thay địa chỉ mẫu bằng email bạn kiểm soát:
+
+```sh
+cd /var/www/sell_cnc
+php artisan admin:set-email duyhoangadmin your-email@example.com
+```
+
+Lệnh không đổi mật khẩu/quyền của tài khoản, không tạo tài khoản mới và hủy liên kết khôi phục cũ. Không chạy lại seeder để đặt lại mật khẩu. Email mẫu `@admin.invalid` không nhận thư khôi phục.
+
+Trong `.env`, cấu hình URL public chính xác và thông tin SMTP do nhà cung cấp email cấp, ví dụ SMTP STARTTLS cổng 587:
+
+```dotenv
+APP_URL=https://your-domain.vn
+MAIL_MAILER=smtp
+MAIL_SCHEME=smtp
+MAIL_HOST=smtp.your-provider.com
+MAIL_PORT=587
+MAIL_USERNAME="YOUR_SMTP_USERNAME"
+MAIL_PASSWORD="YOUR_SMTP_PASSWORD"
+MAIL_FROM_ADDRESS="no-reply@your-domain.vn"
+MAIL_FROM_NAME="khomau3d"
+```
+
+Dùng địa chỉ gửi đã được nhà cung cấp xác minh. Nếu nhà cung cấp yêu cầu TLS trực tiếp cổng 465, đặt `MAIL_SCHEME=smtps` và `MAIL_PORT=465`. Kiểm tra `MAIL_URL` nếu đã cấu hình trước đó vì nó có thể ghi đè các tham số SMTP. `MAIL_MAILER=log` chỉ ghi email vào log, không gửi thư thật.
+
+Áp dụng cấu hình/routes/views mới:
+
+```sh
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+systemctl reload php8.4-fpm
+```
+
+Mở `/admin/signin`, chọn **Quên mật khẩu?**, nhập tên đăng nhập rồi kiểm tra hộp thư/spam. Liên kết được tạo từ `APP_URL`, hết hạn sau 60 phút, chỉ sử dụng một lần. Mật khẩu mới cần ít nhất 8 ký tự gồm chữ hoa, chữ thường, chữ số và ký tự đặc biệt. Đặt lại thành công sẽ chuyển về đăng nhập; cookie ghi nhớ cũ bị vô hiệu và các phiên đã được middleware kiểm tra mật khẩu ghi nhận sẽ phải đăng nhập lại.
+
+Hệ thống giới hạn gửi yêu cầu theo IP và tài khoản, đồng thời trả cùng thông báo cho tài khoản hợp lệ/không tồn tại. Nếu không nhận thư, kiểm tra email tài khoản, SMTP, thư mục spam và log Laravel. Email gửi trực tiếp trong request nên không cần queue worker riêng. Không chia sẻ liên kết đặt lại mật khẩu hoặc log chứa liên kết này.
+
+Bảng `password_reset_tokens` đã có trong migration khởi tạo; tính năng này không thêm migration. Nếu server chưa chạy đủ migration, vẫn thực hiện `php artisan migrate --force` theo quy trình deploy.
+
+### Dùng Mailtrap API thay cho SMTP
+
+Dự án đã tích hợp SDK Mailtrap vào Laravel Mail. Chạy `composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction` theo quy trình deploy để cài dependency mới trong `composer.lock`. Không cần chạy `composer require` trên VPS.
+
+Chọn cấu hình sau trong `.env` thay cho `MAIL_MAILER=smtp`:
+
+```dotenv
+APP_URL=https://your-domain.vn
+MAIL_MAILER=mailtrap-sdk
+MAILTRAP_HOST=send.api.mailtrap.io
+MAILTRAP_API_KEY="YOUR_API_TOKEN"
+MAIL_FROM_ADDRESS="no-reply@your-domain.vn"
+MAIL_FROM_NAME="Kho mẫu 3D"
+MAILTRAP_TEST_TO="chinhcn2312@gmail.com"
+```
+
+Thay token thật và URL website. `MAIL_FROM_ADDRESS` phải thuộc domain được xác minh trong Mailtrap. Nếu đang thử bằng `hello@demomailtrap.co` như đoạn mã demo, chỉ gửi đến email đã đăng ký tài khoản Mailtrap; không dùng sender demo để gửi cho người nhận tùy ý. [Hướng dẫn xác minh domain](https://docs.mailtrap.io/email-api-smtp/setup/sending-domain).
+
+Sau khi cấu hình, chạy bằng root:
+
+```sh
+cd /var/www/sell_cnc
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+systemctl reload php8.4-fpm
+php artisan send-mail
+```
+
+Lệnh gửi email thật qua Mailtrap API đến `MAILTRAP_TEST_TO`. Có thể chỉ định người nhận bằng `php artisan send-mail email@example.com`. Lệnh báo thành công khi API tiếp nhận; kiểm tra hộp thư/spam hoặc Email Logs của Mailtrap để xác nhận giao thư. Không in token hay toàn bộ phản hồi API ra terminal.
+
+Email khôi phục mật khẩu cũng tự dùng Mailtrap khi `MAIL_MAILER=mailtrap-sdk`. Địa chỉ nhận thư khôi phục vẫn lấy từ tài khoản admin (`php artisan admin:set-email duyhoangadmin your-email@example.com`), không lấy từ `MAILTRAP_TEST_TO`. Các biến `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_SCHEME` không được dùng bởi mailer API này. Không cần queue worker riêng.
+
+Nếu thiếu token hoặc cấu hình sai, lệnh gửi thử trả mã lỗi. Kiểm tra `MAILTRAP_API_KEY`, quyền gửi của token, domain gửi, email nhận và kết nối HTTPS từ VPS đến `send.api.mailtrap.io`. [Tài liệu Laravel SDK chính thức](https://github.com/mailtrap/mailtrap-php/blob/main/src/Bridge/Laravel/README.md).
+
 ## 10. Cache production và kiểm tra quyền
 
 ```sh

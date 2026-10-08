@@ -74,6 +74,61 @@ npm run build
 docker compose exec app php artisan optimize:clear
 ```
 
+## Quên mật khẩu quản trị
+
+Trang đăng nhập có liên kết **Quên mật khẩu?**. Nhập tên đăng nhập để nhận liên kết qua email đã lưu của tài khoản admin; mở liên kết và nhập mật khẩu mới hai lần. Liên kết hết hạn sau 60 phút và chỉ dùng được một lần. Tính năng không tạo tài khoản mới.
+
+Email mặc định từ seeder (`username@admin.invalid`) không nhận được thư. Gắn email thật cho tài khoản đã có bằng lệnh sau (thay `your-email@example.com` bằng email bạn kiểm soát):
+
+```sh
+docker compose exec app php artisan admin:set-email duyhoangadmin your-email@example.com
+```
+
+Lệnh giữ nguyên mật khẩu/quyền quản trị và hủy liên kết khôi phục cũ. Chỉ người có quyền chạy CLI trên server mới cấu hình email; form quên mật khẩu không cho đổi địa chỉ nhận thư.
+
+Để thử ở local, đặt `APP_URL=http://localhost:83`, `MAIL_MAILER=log`, sau đó chạy `docker compose exec app php artisan config:clear`. Email được ghi vào log Laravel (`storage/logs/laravel.log` với cấu hình `single` mặc định), không gửi đến hộp thư. Mở liên kết trong nội dung email để kiểm tra luồng. Liên kết trong log có quyền đặt lại mật khẩu, không chia sẻ hoặc commit log.
+
+Để gửi thư thật, cấu hình SMTP theo phần **Khôi phục mật khẩu quản trị qua email** trong [DEPLOY-UBUNTU.md](DEPLOY-UBUNTU.md). Không cần migration mới nếu đã chạy đủ migration trước đó; bảng `password_reset_tokens` có trong migration khởi tạo.
+
+## Mailtrap Email Sending API
+
+Dự án tích hợp SDK chính thức `railsware/mailtrap-php` vào Laravel Mail. Khi chọn `MAIL_MAILER=mailtrap-sdk`, cả email khôi phục mật khẩu và lệnh gửi thử đều dùng Mailtrap API. Không cần cấu hình SMTP cho chế độ này.
+
+Sau khi pull code, cài dependency từ lock file:
+
+```sh
+docker compose exec app composer install
+```
+
+Điền vào `.env` (token tự lấy từ Mailtrap; không commit `.env`):
+
+```dotenv
+APP_URL=http://localhost:83
+MAIL_MAILER=mailtrap-sdk
+MAILTRAP_HOST=send.api.mailtrap.io
+MAILTRAP_API_KEY="YOUR_API_TOKEN"
+MAIL_FROM_ADDRESS="hello@demomailtrap.co"
+MAIL_FROM_NAME="Kho mẫu 3D"
+MAILTRAP_TEST_TO="chinhcn2312@gmail.com"
+```
+
+`hello@demomailtrap.co` là sender demo theo đoạn tích hợp của Mailtrap. Domain demo chỉ gửi được đến địa chỉ đăng ký tài khoản Mailtrap; nếu địa chỉ đăng ký khác, thay `MAILTRAP_TEST_TO` tương ứng. Khi dùng thật, xác minh domain gửi trong Mailtrap rồi đổi `MAIL_FROM_ADDRESS` sang địa chỉ thuộc domain đó. [Hướng dẫn domain của Mailtrap](https://docs.mailtrap.io/email-api-smtp/setup/sending-domain).
+
+Áp dụng cấu hình và tự gửi thử:
+
+```sh
+docker compose exec app php artisan config:clear
+docker compose exec app php artisan send-mail
+# Hoặc chỉ định người nhận cho lần thử này:
+docker compose exec app php artisan send-mail chinhcn2312@gmail.com
+```
+
+Lệnh `send-mail` luôn dùng mailer `mailtrap-sdk`, ngay cả khi mailer mặc định đang là `log`; chạy lệnh sẽ gửi email thật khi dùng host `send.api.mailtrap.io`. Kết quả thành công chỉ xác nhận Mailtrap đã tiếp nhận, cần kiểm tra hộp thư/spam hoặc Email Logs để xác nhận thư đã đến.
+
+Để dùng **Quên mật khẩu**, gắn email nhận cho admin bằng `admin:set-email` ở phần trên. `MAILTRAP_TEST_TO` chỉ dành cho lệnh gửi thử, không tự đổi email tài khoản admin. Giữ `MAIL_MAILER=mailtrap-sdk` để thư khôi phục gửi qua API.
+
+Nếu muốn xem thư trong **Mailtrap Sandbox** thay vì gửi ra hộp thư thật, dùng `MAILTRAP_HOST=sandbox.api.mailtrap.io`, token có quyền Sandbox và `MAILTRAP_INBOX_ID` của inbox; sau đó cập nhật lại cache cấu hình. [Tài liệu Laravel SDK chính thức](https://github.com/mailtrap/mailtrap-php/blob/main/src/Bridge/Laravel/README.md).
+
 ## Phát triển giao diện
 
 Để Vite tự build lại asset khi sửa file, chạy trên **máy host** trong một terminal riêng:

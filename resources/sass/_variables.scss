@@ -89,11 +89,11 @@ $spacers: (
 
 $font-family-base: 'Poppins', sans-serif !default;
 $font-size-root:              null !default;
-$font-size-base:              .875rem !default; // Assumes the browser default, typically `16px`
-$font-size-sm:                $font-size-base * .85 !default;
+$font-size-base:              1rem !default; // Assumes the browser default, typically `16px`
+$font-size-sm:                $font-size-base * .875 !default;
 $font-size-lg:                $font-size-base * 1.25 !default;
 
-$font-xs: 0.75rem !default;
+$font-xs: 0.875rem !default;
 
 $h1-font-size:                $font-size-base * 2.5 !default;
 $h2-font-size:                $font-size-base * 2 !default;

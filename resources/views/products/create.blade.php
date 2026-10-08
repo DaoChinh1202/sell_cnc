@@ -45,8 +45,8 @@
                 </div>
                 <div class="col-md-6 mb-3">
                   <label for="productSku" class="form-label">Mã SKU</label>
-                  <input type="text" class="form-control @error('sku') is-invalid @enderror" id="productSku" name="sku" value="{{ old('sku') }}" required>
-                  @error('sku') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                  <input type="text" class="form-control" id="productSku" value="Tự động tạo khi lưu sản phẩm" disabled aria-describedby="productSkuHelp">
+                  <div id="productSkuHelp" class="form-text">Mã có dạng CNC-XXXXXXXXXX, bạn không cần nhập.</div>
                 </div>
               </div>
               <div class="row">

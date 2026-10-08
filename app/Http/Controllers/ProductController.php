@@ -8,6 +8,7 @@ use App\Services\ProductImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Throwable;
@@ -47,6 +48,7 @@ class ProductController extends Controller
         $data = $this->validatedData($request);
 
         try {
+            $data['sku'] = $this->generateSku();
             $data['image'] = $productImages->storeWatermarked($request->file('image'));
             Product::query()->create($data);
         } catch (Throwable $exception) {
@@ -109,12 +111,23 @@ class ProductController extends Controller
         return to_route('products.show', $product)->with('success', 'Đã cập nhật sản phẩm.');
     }
 
+    private function generateSku(): string
+    {
+        do {
+            $sku = 'CNC-'.Str::upper(Str::random(10));
+        } while (Product::query()->where('sku', $sku)->exists());
+
+        return $sku;
+    }
+
     private function validatedData(Request $request, ?Product $product = null): array
     {
         $data = $request->validate([
             'category_id' => ['required', 'integer', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
-            'sku' => ['required', 'string', 'max:255', Rule::unique('products', 'sku')->ignore($product)],
+            'sku' => $product === null
+                ? ['exclude']
+                : ['required', 'string', 'max:255', Rule::unique('products', 'sku')->ignore($product)],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'in:active,inactive,draft'],

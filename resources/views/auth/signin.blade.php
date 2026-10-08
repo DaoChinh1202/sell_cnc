@@ -13,6 +13,9 @@
                 <p class="small text-muted">Quản lý kho mẫu thiết kế CNC khomau3d.</p>
             </div>
 
+            @if (session('status'))
+                <div class="alert alert-success small" role="status">{{ session('status') }}</div>
+            @endif
             @if ($errors->any())
                 <div class="alert alert-danger small" role="alert">{{ $errors->first() }}</div>
             @endif
@@ -36,6 +39,7 @@
                 </div>
                 <button class="btn btn-primary w-100" type="submit">Đăng nhập</button>
             </form>
+            <div class="text-center mt-3 small"><a href="{{ route('password.request') }}">Quên mật khẩu?</a></div>
             <div class="text-center mt-3 small">
                 <a href="{{ route('home') }}">Về kho mẫu CNC</a>
             </div>
