@@ -1,5 +1,5 @@
 # Deploy khomau3d trên Ubuntu 24.04
-
+e913a979eb5dc2a2f6960d9b8f1e0dc6
 Hướng dẫn cài trực tiếp trên VPS, **không sử dụng Docker**, đăng nhập bằng **root**. Chạy lần lượt từng bước; nếu lệnh báo lỗi, dừng và xử lý trước khi tiếp tục. Các giá trị domain, repository và mật khẩu mẫu phải được thay bằng giá trị thật.
 
 | Service trong Compose | Trên VPS |
