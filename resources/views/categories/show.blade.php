@@ -26,7 +26,7 @@
                 <div class="category-product-grid">@foreach($products as $product)@php $image = $product->image; $name = $product->name; $productCategory = $product->category?->name; $price = $product->price; $imageUrl = $image ? (str_starts_with($image, 'http') ? $image : asset('storage/' . $image)) : null; $productUrl = route('storefront.products.show', $product); @endphp
                      <article class="category-product-card"><a class="category-product-card__image" href="{{ $productUrl }}" aria-label="Xem chi tiết {{ $name }}">@if($imageUrl)<img src="{{ $imageUrl }}" alt="{{ $name }}" loading="lazy">@else<span class="cnc-card__placeholder">DH<small>Ảnh đang cập nhật</small></span>@endif</a><div class="category-product-card__info"><p>{{ $productCategory }}</p><h2><a href="{{ $productUrl }}">{{ $name }}</a></h2><strong>{{ $price !== null ? number_format((float) $price, 0, ',', '.') . 'đ' : 'Liên hệ' }}</strong><a class="category-product-card__link" href="{{ $productUrl }}">Xem chi tiết <span>↗</span></a></div></article>
                  @endforeach</div>
-                 @if(method_exists($products, 'links'))<div class="category-pagination">{{ $products->links() }}</div>@endif
+                 @if(method_exists($products, 'links'))<div class="category-pagination">{{ $products->onEachSide(1)->links('partials.storefront-pagination') }}</div>@endif
             @endif
         </div>
     </div>

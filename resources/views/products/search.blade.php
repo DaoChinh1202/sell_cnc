@@ -16,7 +16,7 @@
         <p class="cnc-result-count">{{ number_format($products->total(), 0, ',', '.') }} mẫu{{ $search !== '' ? ' cho “'.$search.'”' : ' trong thư viện' }}</p>
         @if($products->isNotEmpty())
             <div class="cnc-grid">@foreach($products as $product) @include('partials.catalog-card', ['product' => $product]) @endforeach</div>
-            <div class="category-pagination">{{ $products->links() }}</div>
+            <div class="category-pagination">{{ $products->onEachSide(1)->links('partials.storefront-pagination') }}</div>
         @else
             <div class="cnc-empty"><h2>{{ $search !== '' ? 'Chưa tìm thấy mẫu phù hợp' : 'Thư viện đang được cập nhật' }}</h2><p>Thử tên ngắn hơn, mã mẫu khác hoặc liên hệ để được hỗ trợ.</p><a class="cnc-more" href="{{ route('storefront.products.index') }}">Xem tất cả mẫu ↗</a></div>
         @endif

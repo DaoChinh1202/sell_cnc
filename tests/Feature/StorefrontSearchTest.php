@@ -52,10 +52,21 @@ class StorefrontSearchTest extends TestCase
         $this->get(route('storefront.products.index', ['q' => '_%!']))->assertOk()
             ->assertViewHas('products', fn ($products) => $products->modelKeys() === [$special->id]);
         $this->get(route('storefront.products.index', ['q' => 'CNC-', 'page' => 2]))->assertOk()
+            ->assertSee('class="storefront-pagination__list"', false)
+            ->assertSee('Hiển thị 17–17 trong 17 mẫu')
+            ->assertSee('aria-current="page" aria-label="Trang 2"', false)
+            ->assertSee('aria-disabled="true" aria-label="Trang sau"', false)
+            ->assertSee('q=CNC-&amp;page=1', false)
             ->assertViewHas('products', fn ($products) => $products->count() === 1
                 && $products->total() === 17 && str_contains($products->url(1), 'q=CNC-'));
         $this->get(route('storefront.products.index'))->assertOk()
+            ->assertSee('Hiển thị 1–16 trong 18 mẫu')
+            ->assertSee('aria-disabled="true" aria-label="Trang trước"', false)
+            ->assertSee('rel="next" aria-label="Trang sau"', false)
             ->assertViewHas('products', fn ($products) => $products->total() === 18);
+        $this->get(route('storefront.categories.show', $category))->assertOk()
+            ->assertSee('class="storefront-pagination__list"', false)
+            ->assertSee('Hiển thị 1–12 trong 18 mẫu');
     }
 
     public function test_home_exposes_active_categories_with_visible_product_counts(): void
