@@ -186,6 +186,10 @@ class ProductCatalogTest extends TestCase
 
         $response->assertOk()
             ->assertViewIs('products.detail')
+            ->assertDontSee('Yêu thích')
+            ->assertDontSee('Tài khoản')
+            ->assertSee('Tìm kiếm mẫu CNC...')
+            ->assertSee('Tất cả danh mục')
             ->assertViewHas('product', function (Product $viewProduct) use ($product, $category): bool {
                 return $viewProduct->is($product)
                     && $viewProduct->relationLoaded('category')
