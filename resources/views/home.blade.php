@@ -5,12 +5,24 @@
 <div class="cnc-catalog">
     @include('partials.catalog-header')
     <main id="top">
-        <div class="cnc-intro">
-            <picture>
-                <source type="image/webp" srcset="{{ asset('assets/images/khomau3d-banner-640.webp') }} 640w, {{ asset('assets/images/khomau3d-banner-1280.webp') }} 1280w, {{ asset('assets/images/khomau3d-banner-1983.webp') }} 1983w" sizes="100vw">
-                <img class="cnc-intro__art" src="{{ asset('assets/images/khomau3d-banner.png') }}" alt="Kho mẫu CNC 3D với hoa văn cửa và phù điêu trang trí" width="1983" height="793" fetchpriority="high">
-            </picture>
-        </div>
+        <section class="cnc-intro cnc-banner" data-banner-carousel aria-label="Kho mẫu 3D và dịch vụ scan 3D" aria-roledescription="trình chiếu">
+            <div class="cnc-banner__viewport">
+                <div class="cnc-banner__track" data-banner-track>
+                    <div class="cnc-banner__slide" role="group" aria-label="Kho mẫu 3D.VN">
+                        <picture>
+                            <source type="image/webp" srcset="{{ asset('assets/images/khomau3d-banner-640.webp') }} 640w, {{ asset('assets/images/khomau3d-banner-1280.webp') }} 1280w, {{ asset('assets/images/khomau3d-banner-1983.webp') }} 1983w" sizes="100vw">
+                            <img class="cnc-intro__art" src="{{ asset('assets/images/khomau3d-banner.png') }}" alt="Kho mẫu CNC 3D với hoa văn cửa và phù điêu trang trí" width="1983" height="793" fetchpriority="high">
+                        </picture>
+                    </div>
+                    <div class="cnc-banner__slide" role="group" aria-label="Dịch vụ scan 3D Duy Hoàng" aria-hidden="true" inert>
+                        <picture>
+                            <source type="image/webp" srcset="{{ asset('assets/images/scan-3d-banner-hd-640.webp') }} 640w, {{ asset('assets/images/scan-3d-banner-hd-1280.webp') }} 1280w, {{ asset('assets/images/scan-3d-banner-hd-1944.webp') }} 1944w" sizes="100vw">
+                            <img class="cnc-intro__art" src="{{ asset('assets/images/scan-3d-banner-hd.png') }}" alt="Duy Hoàng — Scan 3D cho đồ gỗ và đồ thờ. Liên hệ 0869 252 228." width="1944" height="809" decoding="async">
+                        </picture>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <section class="cnc-home-search" aria-labelledby="home-search-title">
             <div class="container">

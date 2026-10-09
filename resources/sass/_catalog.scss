@@ -19,7 +19,11 @@
 .cnc-nav__contact { padding: 10px 18px; border: 1px solid #d8c9b6; border-radius: 5px; }
 .cnc-nav__contact span { margin-left: 14px; }
 .cnc-intro { position: relative; background: #102c40; }
-.cnc-intro__art { display: block; width: 100%; height: auto; aspect-ratio: 1991 / 789; min-height: 380px; object-fit: cover; object-position: 65% center; }
+.cnc-intro__art { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+.cnc-banner__viewport { overflow: hidden; }
+.cnc-banner__track { display: flex; touch-action: pan-y pinch-zoom; }
+.cnc-banner__slide { flex: 0 0 100%; min-width: 0; aspect-ratio: 12 / 5; background: #102c40; }
+.cnc-banner__slide picture { display: block; height: 100%; }
 .cnc-home-search { padding: 30px 0 34px; margin-bottom: 14px; background: #f3efe8; border-bottom: 1px solid #e7e0d6; text-align: center; }
 .cnc-home-search h1 { margin: 0 0 6px; font: 600 clamp(1.25rem, 2vw, 1.5rem)/1.4 'Inter', sans-serif; color: var(--cnc-brown); }
 .cnc-home-search__description { margin: 0 0 18px; font-size: 0.875rem; color: #82715d; }
@@ -88,14 +92,6 @@
 .cnc-search--light { border: 1px solid #dfd2bf; box-shadow: none; }
 .cnc-result-count { color: #82715d; font-size: 0.875rem; margin: 25px 0; overflow-wrap: anywhere; }
 .cnc-error { color: #bb5030; }
-@media (max-width: 1000px) {
-    .cnc-intro__art {
-        min-height: 0;
-        aspect-ratio: 1983 / 793;
-        object-fit: contain;
-        object-position: center;
-    }
-}
 @media (max-width: 800px) {
     .cnc-catalog .container { width: calc(100% - 36px); }
     .cnc-header__inner { min-height: 76px; gap: 12px 14px; flex-wrap: wrap; padding-block: 12px; }

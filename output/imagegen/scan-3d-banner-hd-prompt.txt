@@ -1,0 +1,14 @@
+Use case: precise-object-edit. Asset type: wide website hero banner.
+Input image is the EDIT TARGET: existing low resolution 512x213 Vietnamese SCAN 3D advertising banner.
+Primary request: faithful high-resolution restoration and super-resolution enhancement, not a redesign. Produce a crisp, professional 2048x848 px landscape banner (approximately 2.41:1) that looks like the same original artwork with clearer text and details. Preserve original complete composition, all edges, relative positions, black/dark brown and gold palette, gold light streaks, logo above title, ornate wood altar in center-right circle, wireframe 3D altar and handheld scanner on far right, five service icons on left, four furniture thumbnail cards along lower right, bottom phone panel and footer. Sharpen text outlines and wood carving details, remove blur and compression artifacts; avoid crunchy oversharpening or invented additional objects. Do not crop out the phone or footer. Keep all Vietnamese accents and exact typography hierarchy.
+Preserve and render these texts accurately in their original positions:
+Top left: "DUY HOÀNG"
+Large gold brush title: "SCAN 3D"
+Bordered subtitle: "CÔNG NGHỆ SCAN 3D CHO ĐỒ GỖ & ĐỒ THỜ"
+Below subtitle: "CHÍNH XÁC – CHI TIẾT – TỐI ƯU"
+Five icon labels, left to right: "SCAN 3D / CHÍNH XÁC CAO", "DỮ LIỆU 3D / CHI TIẾT", "XUẤT FILE ĐA DẠNG / STL - OBJ - PLY...", "HỖ TRỢ PHỤC CHẾ / & SẢN XUẤT", "TIẾT KIỆM THỜI GIAN / & CHI PHÍ". Slash indicates line break, not a printed slash.
+Four thumbnail captions: "BÀN THỜ", "ÁN GIAN - SẬP THỜ", "GIƯỜNG - TỦ - BÀN GHẾ", "DỮ LIỆU 3D CHI TIẾT".
+Largest footer phone, must be EXACT: "0869.252.228"
+Bottom three icon labels: "BẢO HÀNH / CHÍNH XÁC", "DỮ LIỆU 3D / CHẤT LƯỢNG CAO", "HỖ TRỢ TƯ VẤN / TẬN TÂM".
+Bottom right script: "Giữ gìn giá trị truyền thống" and "bằng công nghệ hiện đại".
+Do not add any new text or watermarks. Preserve original ornamental signage on the altar as closely as possible. Prioritize fidelity, legible Vietnamese text, phone accuracy, and full-bleed original proportions.
