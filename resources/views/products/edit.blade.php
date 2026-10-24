@@ -24,9 +24,23 @@
         <div class="col-md-6"><label for="productSku" class="form-label">SKU</label><input type="text" class="form-control @error('sku') is-invalid @enderror" id="productSku" name="sku" value="{{ old('sku', $product->sku) }}" required>@error('sku')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
         <div class="col-md-6"><label for="productCategory" class="form-label">Danh mục</label><select class="form-select @error('category_id') is-invalid @enderror" id="productCategory" name="category_id" required>@foreach($categories as $category)<option value="{{ $category->id }}" @selected((string) old('category_id', $product->category_id) === (string) $category->id)>{{ $category->name }}</option>@endforeach</select>@error('category_id')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
 
+        <div class="col-12">
+          <label for="productFreeDownloadUrl" class="form-label">Link tải miễn phí</label>
+          <input type="url" class="form-control @error('free_download_url') is-invalid @enderror" id="productFreeDownloadUrl" name="free_download_url" value="{{ old('free_download_url', $product->free_download_url) }}" aria-describedby="productFreeDownloadUrlHelp">
+          <div id="productFreeDownloadUrlHelp" class="form-text">Không bắt buộc. Nhập URL chia sẻ Google Drive để khách tải miễn phí; để trống nếu không có.</div>
+          @error('free_download_url') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+        <div class="col-12">
+          <label for="productTags" class="form-label">Từ khóa</label>
+          <textarea class="form-control @error('tags') is-invalid @enderror" id="productTags" name="tags" rows="3" maxlength="2000" aria-describedby="productTagsHelp @error('tags') productTagsError @enderror" @error('tags') aria-invalid="true" @enderror>{{ old('tags', implode(', ', $product->tags ?? [])) }}</textarea>
+          <div id="productTagsHelp" class="form-text">Không bắt buộc. Phân cách bằng dấu phẩy hoặc xuống dòng; tối đa 20 từ khóa, mỗi từ khóa tối đa 60 ký tự, tổng nội dung tối đa 2000 ký tự.</div>
+          @error('tags') <div id="productTagsError" class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
         <div class="col-12"><label for="productDescription" class="form-label">Mô tả</label><textarea class="form-control @error('description') is-invalid @enderror" id="productDescription" name="description" rows="4">{{ old('description', $product->description) }}</textarea>@error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
       </div>
     </div></div>
+
+    @include('products._file-metadata', ['product' => $product])
 
     <div class="card mb-4">
       <div class="card-header bg-white py-3"><h2 class="h5 mb-0">Giá sản phẩm</h2></div>

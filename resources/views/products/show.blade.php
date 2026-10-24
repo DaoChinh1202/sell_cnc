@@ -46,8 +46,42 @@
           <hr>
           <div class="text-muted small mb-1">Mô tả</div>
           <p class="mb-0">{{ $product->description ?: 'Chưa có mô tả.' }}</p>
+          <hr>
+          <h3 class="text-muted small mb-2">Từ khóa</h3>
+          @if (!empty($product->tags))
+            <ul class="list-unstyled d-flex flex-wrap gap-2 mb-0">
+              @foreach ($product->tags as $tag)
+                <li class="mw-100"><span class="badge text-bg-secondary text-wrap text-break">{{ $tag }}</span></li>
+              @endforeach
+            </ul>
+          @else
+            <p class="mb-0 text-muted">Chưa có từ khóa</p>
+          @endif
         </div>
       </div>
+
+      @php
+        $fileMetadata = collect([
+            'Định dạng file' => $product->file_format,
+            'Phần mềm phù hợp' => $product->compatible_software,
+            'Dung lượng file' => $product->file_size,
+            'Kích thước thiết kế' => $product->design_dimensions,
+            'Ghi chú tải file' => $product->download_note,
+        ])->filter(fn ($value) => filled($value));
+      @endphp
+      @if ($fileMetadata->isNotEmpty())
+        <div class="card mb-4">
+          <div class="card-header bg-white py-3"><h2 class="h5 mb-0">Thông tin file</h2></div>
+          <div class="card-body p-4">
+            <dl class="row g-3 mb-0">
+              @foreach ($fileMetadata as $label => $value)
+                <dt class="col-sm-4 text-muted small">{{ $label }}</dt>
+                <dd class="col-sm-8 mb-0 text-break">{{ $value }}</dd>
+              @endforeach
+            </dl>
+          </div>
+        </div>
+      @endif
 
       <div class="card"><div class="card-header bg-white py-3"><h2 class="h5 mb-0">Timeline</h2></div><div class="card-body p-4"><div class="row g-3"><div class="col-sm-6"><div class="text-muted small">Tạo lúc</div><div>{{ $product->created_at->format('d/m/Y H:i') }}</div></div><div class="col-sm-6"><div class="text-muted small">Cập nhật lần cuối</div><div>{{ $product->updated_at->format('d/m/Y H:i') }}</div></div></div></div></div>
     </div>

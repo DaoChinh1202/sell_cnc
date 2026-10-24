@@ -14,6 +14,13 @@ class Product extends Model
         'sku',
         'brand',
         'description',
+        'free_download_url',
+        'file_format',
+        'compatible_software',
+        'file_size',
+        'design_dimensions',
+        'download_note',
+        'tags',
         'price',
         'tax',
         'discount',
@@ -29,6 +36,7 @@ class Product extends Model
     {
         return [
             'is_featured' => 'boolean',
+            'tags' => 'array',
         ];
     }
 

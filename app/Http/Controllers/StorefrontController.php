@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class StorefrontController extends Controller
@@ -23,10 +24,40 @@ class StorefrontController extends Controller
         return view('home', compact('categories', 'newestProducts'));
     }
 
+    public function show(string $product): View
+    {
+        $product = Product::query()->with('category')->whereKey($product)
+            ->where('status', 'active')->firstOrFail();
+        $candidates = Product::query()->visible()->with('category')
+            ->where('id', '!=', $product->id)->latest()->orderByDesc('id');
+        $relatedProducts = collect();
+
+        if (! empty($product->tags)) {
+            $relatedProducts = (clone $candidates)->where(function ($query) use ($product): void {
+                foreach ($product->tags as $tag) {
+                    $query->orWhereJsonContains('tags', $tag);
+                }
+            })->limit(4)->get();
+        }
+
+        if ($relatedProducts->count() < 4) {
+            $sameCategory = (clone $candidates)->where('category_id', $product->category_id)
+                ->whereNotIn('id', $relatedProducts->pluck('id'))
+                ->limit(4 - $relatedProducts->count())->get();
+            $relatedProducts = $relatedProducts->concat($sameCategory);
+        }
+
+        return view('products.detail', compact('product', 'relatedProducts'));
+    }
+
     public function search(Request $request): View
     {
-        $data = $request->validate(['q' => ['nullable', 'string', 'max:100']]);
+        $data = $request->validate([
+            'q' => ['nullable', 'string', 'max:100'],
+            'tag' => ['nullable', 'string', 'max:60'],
+        ]);
         $search = trim($data['q'] ?? '');
+        $tag = Str::lower(Str::squish($data['tag'] ?? ''));
         $query = Product::query()->visible()->with('category');
 
         if ($search !== '') {
@@ -37,8 +68,12 @@ class StorefrontController extends Controller
                 ->orWhereRaw("sku LIKE ? ESCAPE '!'", [$pattern]));
         }
 
+        if ($tag !== '') {
+            $query->whereJsonContains('tags', $tag);
+        }
+
         $products = $query->latest()->orderByDesc('id')->paginate(16)->withQueryString();
 
-        return view('products.search', compact('products', 'search'));
+        return view('products.search', compact('products', 'search', 'tag'));
     }
 }

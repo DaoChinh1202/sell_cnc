@@ -365,8 +365,7 @@ REDIS_HOST=127.0.0.1
 REDIS_PASSWORD=null
 REDIS_PORT=6379
 
-IMAGE_WATERMARK_PHONE=0869252228
-IMAGE_WATERMARK_FONT=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+IMAGE_WATERMARK_FONT=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf
 ```
 
 **Nếu chưa có domain và chạy bằng IP với port 8080**, thay các giá trị tương ứng trong `.env` (không thêm dòng trùng):
@@ -381,7 +380,7 @@ Thay `IP_VPS` bằng IP public thật. `APP_URL` khai báo URL ứng dụng, kh�
 
 Không dùng hostname `mysql`, `redis`, `app` của Docker. Dùng port local MySQL `3306`, không phải port host Docker `3308`.
 
-Ảnh sản phẩm upload mới được chèn số `0869252228` theo góc 30°, lặp 3 lần từ trên xuống dưới. `IMAGE_WATERMARK_PHONE` phải giữ số 0 đầu; các biến logo và `IMAGE_WATERMARK_TEXT` cũ không còn được dùng. Sau khi sửa `.env`, chạy `php artisan config:cache`. Ảnh đã lưu không tự đổi watermark; cần upload lại ảnh gốc để thay watermark cũ, không upload lại bản đã có logo. Ảnh danh mục không chịu ảnh hưởng.
+Ảnh sản phẩm upload mới có một cụm ba dòng chữ đỏ viền trắng nghiêng 22° xuống bên phải: `Duy Hoang`, `Nhận vẽ thiết kế mẫu quét mẫu JDPAINT-ARTFOM theo yêu cầu.`, `Liên hệ: 0869252228`. Nội dung đặt tại `config/images.php`; các biến `IMAGE_WATERMARK_PHONE`, `IMAGE_WATERMARK_TEXT` và logo cũ không còn được dùng. Font mặc định là DejaVuSans-Bold; cập nhật `IMAGE_WATERMARK_FONT` nếu đang dùng font thường. Sau khi cập nhật, chạy `php artisan config:cache`. Ảnh đã lưu không tự đổi watermark; cần upload lại ảnh gốc chưa có watermark. Ảnh danh mục không chịu ảnh hưởng.
 
 ## 8. Quyền truy cập source và runtime
 

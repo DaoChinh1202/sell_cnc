@@ -23,13 +23,14 @@ class ProductImageServiceTest extends TestCase
     }
 
     #[DataProvider('images')]
-    public function test_it_draws_three_separate_diagonal_phone_watermarks_without_corner_labels_or_logo(
+    public function test_it_draws_a_centered_red_and_white_watermark_sloping_down_to_the_right(
         string $format, int $width, int $height, int $outputWidth, int $outputHeight,
     ): void {
         Storage::fake('public');
         config([
-            'images.watermark_text' => '0869252228',
-            'images.font' => '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+            // The former phone-only setting must not override the new text.
+            'images.watermark_text' => 'OLD PHONE WATERMARK',
+            'images.font' => '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
             'images.quality' => 100,
             'images.max_width' => 2000,
             'images.max_height' => 2000,
@@ -45,7 +46,9 @@ class ProductImageServiceTest extends TestCase
         try {
             $this->assertSame($outputWidth, imagesx($image));
             $this->assertSame($outputHeight, imagesy($image));
-            $bands = [[], [], []];
+            $pixels = [];
+            $redPixels = 0;
+            $whitePixels = 0;
             $topMarginPixels = 0;
             $outside = 0;
             for ($y = 0; $y < $outputHeight; $y++) {
@@ -57,8 +60,13 @@ class ProductImageServiceTest extends TestCase
                     if ($y < $outputHeight * 0.04) {
                         $topMarginPixels++;
                     }
-                    $band = min(2, (int) floor(3 * $y / $outputHeight));
-                    $bands[$band][] = [$x, $y];
+                    $pixels[] = [$x, $y];
+                    if ($pixel['red'] > 100 && $pixel['red'] > $pixel['green'] * 1.5) {
+                        $redPixels++;
+                    }
+                    if (min($pixel['red'], $pixel['green'], $pixel['blue']) > 160) {
+                        $whitePixels++;
+                    }
                     if ($x === 0 || $x === $outputWidth - 1 || $y === 0 || $y === $outputHeight - 1) {
                         $outside++;
                     }
@@ -66,25 +74,32 @@ class ProductImageServiceTest extends TestCase
             }
             $this->assertSame(0, $outside, 'Watermarks must not be clipped at the image edge.');
             $this->assertSame(0, $topMarginPixels, 'The former corner labels must be absent.');
-            $previousBottom = -1;
-            foreach ($bands as $pixels) {
-                $this->assertNotEmpty($pixels, 'All three bands must contain visible text.');
-                $xs = array_column($pixels, 0);
-                $ys = array_column($pixels, 1);
-                $this->assertGreaterThan($previousBottom + 1, min($ys), 'Watermarks must be separated.');
-                $previousBottom = max($ys);
-                // A line rising from left to right has negative covariance in image coordinates.
-                $meanX = array_sum($xs) / count($xs);
-                $meanY = array_sum($ys) / count($ys);
-                $covariance = 0;
-                foreach ($pixels as [$x, $y]) {
-                    $covariance += ($x - $meanX) * ($y - $meanY);
-                }
-                $this->assertLessThan(0, $covariance, 'Each watermark must be diagonal.');
+            $this->assertNotEmpty($pixels);
+            $xs = array_column($pixels, 0);
+            $ys = array_column($pixels, 1);
+            $meanX = array_sum($xs) / count($xs);
+            $meanY = array_sum($ys) / count($ys);
+            $covariance = 0;
+            foreach ($pixels as [$x, $y]) {
+                $covariance += ($x - $meanX) * ($y - $meanY);
+            }
+            $this->assertGreaterThan(0, $covariance, 'Watermark must slope down to the right.');
+            if ($outputWidth >= 480) {
+                $this->assertGreaterThan(0, $redPixels, 'Text must be red.');
+                $this->assertGreaterThan(0, $whitePixels, 'Text must have a white outline.');
             }
         } finally {
             imagedestroy($image);
         }
+    }
+
+    public function test_default_watermark_contains_the_requested_three_lines(): void
+    {
+        $this->assertSame([
+            'Duy Hoang',
+            'Nhận vẽ thiết kế mẫu quét mẫu JDPAINT-ARTFOM theo yêu cầu.',
+            'Liên hệ: 0869252228',
+        ], config('images.watermark_lines'));
     }
 
     public function test_transparent_png_remains_transparent_outside_the_watermark(): void

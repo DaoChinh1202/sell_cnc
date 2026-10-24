@@ -39,6 +39,7 @@ class ProductManagementTest extends TestCase
             'name' => 'Mẫu hoa sen',
             'price' => 1000000,
             'description' => 'Mẫu thiết kế CNC.',
+            'free_download_url' => 'https://drive.google.com/file/d/example/view?usp=sharing',
             'status' => 'active',
             'is_featured' => '1',
             'image' => $image,
@@ -47,6 +48,7 @@ class ProductManagementTest extends TestCase
         $this->assertDatabaseHas('products', [
             'name' => 'Mẫu hoa sen',
             'image' => 'products/watermarked.webp',
+            'free_download_url' => 'https://drive.google.com/file/d/example/view?usp=sharing',
             'is_featured' => true,
             'brand' => null,
             'quantity' => 0,
@@ -85,7 +87,7 @@ class ProductManagementTest extends TestCase
             Str::createRandomStringsNormally();
         }
 
-        $this->assertDatabaseHas('products', ['name' => 'Mẫu khác', 'sku' => 'CNC-BBBBBBBBBB']);
+        $this->assertDatabaseHas('products', ['name' => 'Mẫu khác', 'sku' => 'CNC-BBBBBBBBBB', 'free_download_url' => null]);
         $this->assertSame('CNC-AAAAAAAAAA', $product->fresh()->sku);
         $this->assertDatabaseCount('products', 2);
     }
@@ -165,7 +167,8 @@ class ProductManagementTest extends TestCase
             }
             $response->assertSee('name="price"', false)
                 ->assertSee('name="image"', false)
-                ->assertSee('name="is_featured"', false);
+                ->assertSee('name="is_featured"', false)
+                ->assertSee('name="free_download_url"', false);
         }
 
         foreach ([route('inventory'), route('products.show', $product)] as $url) {
@@ -187,6 +190,55 @@ class ProductManagementTest extends TestCase
             ->assertDontSee('product-detail__stock', false)
             ->assertDontSee('Còn hàng')
             ->assertDontSee('Tạm hết hàng');
+    }
+
+    public function test_free_download_link_can_be_updated_displayed_and_cleared(): void
+    {
+        $product = $this->legacyProduct();
+        $payload = [
+            'category_id' => $product->category_id,
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'price' => $product->price,
+            'status' => 'active',
+        ];
+        $url = 'https://drive.google.com/file/d/free-example/view?usp=sharing&download=1';
+
+        $this->get(route('storefront.products.show', $product))->assertOk()->assertDontSee('Tải miễn phí');
+        $this->put(route('products.update', $product), $payload + ['free_download_url' => $url])
+            ->assertSessionHasNoErrors()->assertRedirect(route('products.show', $product));
+        $this->assertSame($url, $product->fresh()->free_download_url);
+        $this->get(route('products.edit', $product))->assertOk()->assertSee('value="'.e($url).'"', false);
+        $this->get(route('storefront.products.show', $product))->assertOk()
+            ->assertSee('Tải miễn phí')->assertSee('href="'.e($url).'"', false)
+            ->assertSee('rel="noopener noreferrer"', false);
+
+        $this->put(route('products.update', $product), $payload + ['free_download_url' => ''])
+            ->assertSessionHasNoErrors();
+        $this->assertNull($product->fresh()->free_download_url);
+        $this->get(route('storefront.products.show', $product))->assertOk()->assertDontSee('Tải miễn phí');
+    }
+
+    public function test_invalid_free_download_urls_are_rejected_on_create_and_update(): void
+    {
+        $product = $this->legacyProduct();
+        $payload = [
+            'category_id' => $product->category_id,
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'price' => $product->price,
+            'status' => 'active',
+        ];
+        foreach (['not-a-url', 'javascript:alert(1)', 'data:text/html,test', 'ftp://example.com/file', 'https://example.com/'.str_repeat('a', 2048)] as $url) {
+            $this->post(route('products.store'), $payload + [
+                'free_download_url' => $url,
+                'image' => UploadedFile::fake()->image('product.png', 320, 240),
+            ])->assertSessionHasErrors('free_download_url');
+            $this->put(route('products.update', $product), $payload + ['free_download_url' => $url])
+                ->assertSessionHasErrors('free_download_url');
+        }
+        $this->assertNull($product->fresh()->free_download_url);
+        $this->assertDatabaseCount('products', 1);
     }
 
     private function category(): Category

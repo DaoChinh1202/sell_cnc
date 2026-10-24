@@ -2,11 +2,13 @@ import '../sass/storefront.scss';
 import { protectStorefront } from './storefront-protection';
 import { initProductImageZoom } from './product-image-zoom';
 import { initBannerCarousel } from './banner-carousel';
+import { initProductDetail } from './product-detail';
 
 document.addEventListener('DOMContentLoaded', () => {
     protectStorefront();
     initProductImageZoom();
     initBannerCarousel();
+    initProductDetail();
 
     const slides = [...document.querySelectorAll('.hero__slide')];
     const dots = document.querySelector('.hero__dots');

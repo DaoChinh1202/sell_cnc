@@ -42,6 +42,12 @@ class StorefrontSeo
             }
             $noindex = count($parameters) > 1;
         } elseif ($route === 'storefront.products.index') {
+            $tag = $request->query('tag');
+            if (is_string($tag) && Str::squish($tag) !== '') {
+                $parameters['tag'] = Str::lower(Str::squish($tag));
+                // Filter pages are useful navigation, not additional indexable product copies.
+                $noindex = true;
+            }
             // Use the validated controller value without changing the search's literal meaning.
             if ($search !== '') {
                 $parameters['q'] = $search;
@@ -90,6 +96,9 @@ class StorefrontSeo
             if ($product->price !== null) {
                 // Match the displayed whole-dong price; tax/discount are not applied by the storefront.
                 $schema['offers'] = ['@type' => 'Offer', 'url' => $canonical, 'priceCurrency' => 'VND', 'price' => number_format((float) $product->price, 0, '.', '')];
+            }
+            if ($product->tags) {
+                $schema['keywords'] = implode(', ', $product->tags);
             }
             $graph[] = $schema;
         }

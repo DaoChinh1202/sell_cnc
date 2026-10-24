@@ -68,6 +68,13 @@ button { border: 0; background: none; cursor: pointer; color: inherit; }
     .product-detail__gallery img { transition: none; }
 }
 .product-detail__summary { padding: 20px 0; }.product-detail__summary h1 { font: 500 clamp(42px, 5vw, 70px)/.92 'Cormorant Garamond', serif; letter-spacing: -.04em; margin: 0 0 27px; max-width: 540px; }.product-detail__price { display: flex; align-items: baseline; gap: 15px; border-bottom: 1px solid $line; padding-bottom: 23px; }.product-detail__price strong { color: $gold; font-size: 1.5rem; font-weight: 500; }.product-detail__price del { color: #aaa; font-size: 1rem; }.product-detail__discount { color: #9d5b45; font-size: 0.75rem; letter-spacing: .08em; }.product-detail__description { color: #777; font-size: 0.9375rem; line-height: 1.9; margin: 24px 0; max-width: 470px; }
+.product-detail .product-detail__tags { margin-top: 28px; border-top: 1px solid $line; padding-top: 20px; min-width: 0; }
+.product-detail .product-detail__tags h2 { margin: 0 0 12px; font-size: 0.875rem; font-weight: 600; }
+.product-detail .product-detail__tags ul { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
+.product-detail .product-detail__tags li { min-width: 0; max-width: 100%; }
+.product-detail .product-detail__tags a { display: block; padding: 4px 10px; border: 1px solid #ddd; border-radius: 4px; background: #eee; color: #595959; font-size: 0.75rem; line-height: 1.5; overflow-wrap: anywhere; }
+.product-detail .product-detail__tags a:hover { background: #e2e2e2; color: #262522; }
+.product-detail .product-detail__tags a:focus-visible { outline: 2px solid #595959; outline-offset: 3px; }
 .product-detail__stock { display: flex; align-items: center; gap: 8px; color: #4d795e; font-size: 0.8125rem; margin: 0 0 28px; }.product-detail__stock span { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }.product-detail__stock small { color: #999; margin-left: 5px; }.product-detail__stock.is-unavailable { color: #a34e4e; }
 .product-detail__footer { padding: 22px 0; }.product-detail__footer .footer__bottom { border: 0; padding: 0; color: #999; }.product-detail__footer a:hover { color: #fff; }
 .storefront-contact { position: fixed; z-index: 20; left: max(20px, env(safe-area-inset-left)); bottom: max(22px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: flex-start; gap: 10px; pointer-events: none; }
@@ -122,6 +129,7 @@ button { border: 0; background: none; cursor: pointer; color: inherit; }
 }
 
 @import 'catalog';
+@import 'product-detail';
 
 // Keep form controls readable on touch screens as well as desktop.
 .search input, .newsletter input,

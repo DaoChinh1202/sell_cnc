@@ -23,15 +23,7 @@ Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
 Route::get('/', [StorefrontController::class, 'index'])->name('home');
 Route::get('/products', [StorefrontController::class, 'search'])->name('storefront.products.index');
 
-Route::get('/products/{product}', function (string $product) {
-    $product = Product::query()
-        ->with('category')
-        ->whereKey($product)
-        ->where('status', 'active')
-        ->firstOrFail();
-
-    return view('products.detail', ['product' => $product]);
-})->name('storefront.products.show');
+Route::get('/products/{product}', [StorefrontController::class, 'show'])->name('storefront.products.show');
 
 Route::get('/categories/{category:slug}', function (Request $request, string $category) {
     $category = Category::query()

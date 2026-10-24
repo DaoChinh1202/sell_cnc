@@ -95,53 +95,93 @@ class ProductImageService
             throw new RuntimeException('Không tìm thấy font để tạo watermark.');
         }
 
-        $text = trim((string) config('images.watermark_text', '0869252228'));
-
-        if ($text === '') {
-            throw new RuntimeException('Chưa cấu hình số điện thoại watermark.');
+        $lines = config('images.watermark_lines');
+        if (! is_array($lines) || count($lines) !== 3) {
+            throw new RuntimeException('Cần cấu hình đủ ba dòng watermark.');
         }
 
-        $width = imagesx($image);
-        $height = imagesy($image);
-        $angle = 30;
-        $fontSize = 72.0;
-        $bounds = $this->textBounds($fontSize, $angle, $font, $text);
-        // Each tilted line fits in its own band, including the one-pixel outline.
-        $availableWidth = max(1, $width * 0.874 - 2);
-        $availableHeight = max(1, $height * 0.276 - 2);
-        $fontSize *= min($availableWidth / $bounds['width'], $availableHeight / $bounds['height']);
-        $fontSize = max(1.0, floor($fontSize * 2) / 2);
-
-        do {
-            $bounds = $this->textBounds($fontSize, $angle, $font, $text);
-            if ($bounds['width'] <= $availableWidth && $bounds['height'] <= $availableHeight) {
-                break;
+        $fontSize = 48.0;
+        $padding = 8;
+        $gap = 26;
+        $bounds = [];
+        foreach ($lines as $text) {
+            if (! is_string($text) || trim($text) === '') {
+                throw new RuntimeException('Nội dung watermark không được để trống.');
             }
-            $fontSize -= 0.5;
-        } while ($fontSize >= 1);
-
-        if ($fontSize < 1) {
-            throw new RuntimeException('Ảnh quá nhỏ để chèn đủ watermark.');
+            $bounds[] = $this->textBounds($fontSize, 0, $font, $text);
         }
 
-        $shadow = imagecolorallocatealpha($image, 0, 0, 0, 90);
-        $textColor = imagecolorallocatealpha($image, 255, 255, 255, 58);
+        // Render the whole block before rotating, so all three lines share a baseline direction.
+        $layerWidth = max(array_column($bounds, 'width')) + 2 * $padding;
+        $layerHeight = array_sum(array_column($bounds, 'height')) + 2 * $gap + 2 * $padding;
+        $layer = imagecreatetruecolor($layerWidth, $layerHeight);
+        if ($layer === false) {
+            throw new RuntimeException('Không thể tạo lớp watermark.');
+        }
 
-        // GD's positive angle rises from left to right. Place three copies vertically.
-        foreach ([0.2, 0.5, 0.8] as $positionY) {
-            $x = (int) round(($width - $bounds['width']) / 2 - $bounds['min_x']);
-            $y = (int) round($height * $positionY - $bounds['height'] / 2 - $bounds['min_y']);
+        $rotated = null;
+        try {
+            imagealphablending($layer, false);
+            imagesavealpha($layer, true);
+            $transparent = imagecolorallocatealpha($layer, 0, 0, 0, 127);
+            imagefill($layer, 0, 0, $transparent);
+            imagealphablending($layer, true);
+            $outline = imagecolorallocate($layer, 255, 255, 255);
+            $red = imagecolorallocate($layer, 230, 0, 0);
+            $top = $padding;
 
-            $this->drawText($image, $fontSize, $angle, $x, $y, $shadow, $textColor, $font, $text);
+            foreach (array_values($lines) as $index => $text) {
+                $box = $bounds[$index];
+                $x = (int) round(($layerWidth - $box['width']) / 2 - $box['min_x']);
+                $y = $top - $box['min_y'];
+                $this->drawText($layer, $fontSize, 0, $x, $y, $outline, $red, $font, $text);
+                $top += $box['height'] + $gap;
+            }
+
+            // Negative rotation slopes down from left to right, matching the reference image.
+            $rotated = imagerotate($layer, -22, $transparent);
+            if ($rotated === false) {
+                throw new RuntimeException('Không thể xoay watermark.');
+            }
+            imagesavealpha($rotated, true);
+            imagealphablending($rotated, false);
+            // GD rotation can round fully transparent pixels to alpha 126, tinting the background.
+            $clear = imagecolorallocatealpha($rotated, 0, 0, 0, 127);
+            for ($row = 0; $row < imagesy($rotated); $row++) {
+                for ($column = 0; $column < imagesx($rotated); $column++) {
+                    if (((imagecolorat($rotated, $column, $row) >> 24) & 0x7f) >= 126) {
+                        imagesetpixel($rotated, $column, $row, $clear);
+                    }
+                }
+            }
+
+            $width = imagesx($image);
+            $height = imagesy($image);
+            $scale = min($width * 0.94 / imagesx($rotated), $height * 0.82 / imagesy($rotated));
+            $targetWidth = max(1, (int) floor(imagesx($rotated) * $scale));
+            $targetHeight = max(1, (int) floor(imagesy($rotated) * $scale));
+            $x = (int) floor(($width - $targetWidth) / 2);
+            $y = (int) floor(($height - $targetHeight) / 2);
+
+            if (! imagecopyresampled($image, $rotated, $x, $y, 0, 0, $targetWidth, $targetHeight, imagesx($rotated), imagesy($rotated))) {
+                throw new RuntimeException('Không thể ghép watermark vào ảnh.');
+            }
+        } finally {
+            imagedestroy($layer);
+            if ($rotated instanceof \GdImage) {
+                imagedestroy($rotated);
+            }
         }
 
     }
 
-    private function drawText(\GdImage $image, float $fontSize, int $angle, int $x, int $y, int $shadow, int $textColor, string $font, string $text): void
+    private function drawText(\GdImage $image, float $fontSize, int $angle, int $x, int $y, int $outline, int $textColor, string $font, string $text): void
     {
-        foreach ([[-1, -1], [1, -1], [-1, 1], [1, 1]] as [$offsetX, $offsetY]) {
-            if (imagettftext($image, $fontSize, $angle, $x + $offsetX, $y + $offsetY, $shadow, $font, $text) === false) {
-                throw new RuntimeException('Không thể tạo watermark.');
+        for ($offsetX = -3; $offsetX <= 3; $offsetX++) {
+            for ($offsetY = -3; $offsetY <= 3; $offsetY++) {
+                if (imagettftext($image, $fontSize, $angle, $x + $offsetX, $y + $offsetY, $outline, $font, $text) === false) {
+                    throw new RuntimeException('Không thể tạo watermark.');
+                }
             }
         }
 

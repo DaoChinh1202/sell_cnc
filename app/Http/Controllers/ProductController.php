@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Throwable;
 
@@ -129,6 +130,13 @@ class ProductController extends Controller
                 ? ['exclude']
                 : ['required', 'string', 'max:255', Rule::unique('products', 'sku')->ignore($product)],
             'description' => ['nullable', 'string'],
+            'tags' => ['nullable', 'string', 'max:2000'],
+            'free_download_url' => ['nullable', 'string', 'url:http,https', 'max:2048'],
+            'file_format' => ['nullable', 'string', 'max:100'],
+            'compatible_software' => ['nullable', 'string', 'max:255'],
+            'file_size' => ['nullable', 'string', 'max:100'],
+            'design_dimensions' => ['nullable', 'string', 'max:255'],
+            'download_note' => ['nullable', 'string', 'max:500'],
             'price' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'in:active,inactive,draft'],
             'is_featured' => ['sometimes', 'boolean'],
@@ -141,6 +149,21 @@ class ProductController extends Controller
                 'dimensions:min_width=100,min_height=100,max_width=6000,max_height=6000',
             ],
         ]);
+
+        if (array_key_exists('tags', $data)) {
+            $tags = collect(preg_split('/[,\r\n]+/u', $data['tags'] ?? ''))
+                ->map(fn (string $tag): string => Str::lower(Str::squish($tag)))
+                ->filter(fn (string $tag): bool => $tag !== '')
+                ->unique()->values();
+
+            if ($tags->count() > 20 || $tags->contains(fn (string $tag): bool => mb_strlen($tag) > 60)) {
+                throw ValidationException::withMessages([
+                    'tags' => 'Mỗi sản phẩm tối đa 20 từ khóa, mỗi từ khóa tối đa 60 ký tự.',
+                ]);
+            }
+
+            $data['tags'] = $tags->all();
+        }
 
         $data['is_featured'] = $request->boolean('is_featured');
 

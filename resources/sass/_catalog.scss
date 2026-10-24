@@ -89,6 +89,9 @@
 .cnc-search-page { padding-top: 35px; padding-bottom: 65px; min-height: 60vh; }
 .cnc-search-page > .cnc-kicker { margin-top: 30px; }
 .cnc-search-page h1 { font: 600 clamp(28px, 4vw, 42px)/1.2 'Inter', sans-serif; letter-spacing: -.04em; margin: 0 0 25px; }
+.cnc-catalog .cnc-tag-filter { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px; margin-bottom: 24px; }
+.cnc-catalog .cnc-tag-filter h2 { min-width: 0; margin: 0; font-size: 1rem; font-weight: 500; overflow-wrap: anywhere; }
+.cnc-catalog .cnc-tag-filter h2 span { color: #595959; }
 .cnc-search--light { border: 1px solid #dfd2bf; box-shadow: none; }
 .cnc-result-count { color: #82715d; font-size: 0.875rem; margin: 25px 0; overflow-wrap: anywhere; }
 .cnc-error { color: #bb5030; }

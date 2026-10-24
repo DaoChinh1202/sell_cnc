@@ -8,41 +8,138 @@
         ? (str_starts_with($image, 'http') ? $image : asset('storage/' . $image))
         : null;
     $price = data_get($product, 'price');
-
+    $specifications = collect([
+        'Định dạng tệp' => $product->file_format,
+        'Phần mềm tương thích' => $product->compatible_software,
+        'Dung lượng tệp' => $product->file_size,
+        'Kích thước thiết kế' => $product->design_dimensions,
+    ])->filter(fn ($value) => filled($value));
 @endphp
 
 @section('title', $name . ' — khomau3d - Kho mẫu CNC')
 
 @section('content')
-<header class="site-header">
-    <div class="container site-header__main">
-        <button class="menu-toggle" aria-label="Mở menu">☰</button>
-        <a href="{{ route('home') }}" class="brand"><img src="{{ asset('assets/images/khomau3d_logo_no_tagline.svg') }}" alt="Kho mẫu 3D"></a>
-        <form class="search" method="get" action="{{ route('storefront.products.index') }}"><input type="search" name="q" maxlength="100" placeholder="Tìm kiếm mẫu CNC..." aria-label="Tìm kiếm"><button aria-label="Tìm kiếm">⌕</button></form>
+<div class="cnc-catalog product-detail-page" data-product-detail>
+    @include('partials.catalog-header')
+    <main class="product-detail">
+        <div class="container">
+            <div class="product-detail__browse">
+                <a class="cnc-more" href="{{ route('home') }}#categories">Tất cả danh mục <span aria-hidden="true">↗</span></a>
+                <form class="cnc-search" method="get" action="{{ route('storefront.products.index') }}" role="search">
+                    <label class="sr-only" for="detail-search">Tìm theo tên mẫu hoặc mã sản phẩm</label>
+                    <input id="detail-search" type="search" name="q" maxlength="100" placeholder="Tìm kiếm mẫu CNC...">
+                    <button type="submit">Tìm mẫu</button>
+                </form>
+            </div>
+            <nav class="product-detail__breadcrumb" aria-label="Đường dẫn">
+                <a href="{{ route('home') }}">Trang chủ</a><span aria-hidden="true">/</span>
+                <a href="{{ route('storefront.products.index') }}">Kho mẫu</a><span aria-hidden="true">/</span>
+                @if($product->category?->status === 'active')
+                    <a href="{{ route('storefront.categories.show', $product->category) }}">{{ $category }}</a><span aria-hidden="true">/</span>
+                @endif
+                <strong aria-current="page">{{ $name }}</strong>
+            </nav>
 
-    </div>
-    <nav class="main-nav"><div class="container main-nav__inner"><a class="all-categories" href="{{ route('home') }}#categories">☷ <span>Tất cả danh mục</span></a><div class="nav-links"><a href="{{ route('home') }}">Trang chủ</a><a class="active" href="{{ route('home') }}#products">Thư viện mẫu</a><a href="{{ route('home') }}#categories">Danh mục CNC</a><a href="{{ route('home') }}#contact">Liên hệ</a></div></div></nav>
-</header>
-
-<main class="product-detail">
-    <div class="container">
-        <nav class="product-detail__breadcrumb" aria-label="Đường dẫn"><a href="{{ route('home') }}">Trang chủ</a><span>/</span>@if($product->category?->status === 'active')<a href="{{ route('storefront.categories.show', $product->category) }}">{{ $category }}</a><span>/</span>@endif<strong>{{ $name }}</strong></nav>
-        <div class="product-detail__layout">
-            <figure class="product-detail__gallery">@if($imageUrl)<img src="{{ $imageUrl }}" alt="{{ $name }}">@else<span class="cnc-card__placeholder">DH<small>Ảnh đang cập nhật</small></span>@endif</figure>
-            <section class="product-detail__summary" aria-labelledby="product-title">
-                <p class="eyebrow">{{ $category }}</p>
-                <h1 id="product-title">{{ $name }}</h1>
-                <div class="product-detail__price">
-                    @if($price !== null)
-                        <strong>{{ number_format((float) $price, 0, ',', '.') }}đ</strong>
-                    @else <strong>Liên hệ</strong> @endif
+            <div class="product-detail__layout">
+                <div class="product-detail__visual">
+                    <figure class="product-detail__gallery">
+                        @if($imageUrl)<img src="{{ $imageUrl }}" alt="{{ $name }}" fetchpriority="high" data-detail-image>@endif
+                        <span class="cnc-card__placeholder" data-image-fallback @if($imageUrl) hidden @endif>DH<small>Ảnh đang cập nhật</small></span>
+                    </figure>
+                    @if($imageUrl)
+                        <div class="product-detail__image-tools">
+                            <span>Ảnh tham khảo thiết kế</span>
+                            <button type="button" data-image-open aria-haspopup="dialog" aria-controls="product-image-dialog" hidden>Phóng to ảnh <span aria-hidden="true">↗</span></button>
+                        </div>
+                        <dialog id="product-image-dialog" class="product-detail__dialog" aria-labelledby="product-image-title">
+                            <div class="product-detail__dialog-heading">
+                                <h2 id="product-image-title">{{ $name }}</h2>
+                                <button type="button" data-image-close autofocus aria-label="Đóng ảnh phóng to">Đóng <span aria-hidden="true">×</span></button>
+                            </div>
+                            <div class="product-detail__dialog-image">
+                                <img src="{{ $imageUrl }}" alt="Ảnh phóng to: {{ $name }}" loading="lazy" data-detail-image>
+                                <span class="cnc-card__placeholder" data-image-fallback hidden>DH<small>Không thể tải ảnh. Vui lòng thử lại sau.</small></span>
+                            </div>
+                        </dialog>
+                    @endif
                 </div>
-                @if($product->description)<p class="product-detail__description">{{ $product->description }}</p>@endif
 
-            </section>
+                <section class="product-detail__summary" aria-labelledby="product-title">
+                    <p class="cnc-kicker">{{ filled($category) ? $category : 'THƯ VIỆN THIẾT KẾ CNC' }}</p>
+                    <h1 id="product-title">{{ $name }}</h1>
+                    @if(filled($product->sku))
+                        <div class="product-detail__sku">
+                            <span>Mã mẫu: <strong>{{ $product->sku }}</strong></span>
+                            <button type="button" data-copy-sku="{{ $product->sku }}" hidden>Sao chép mã</button>
+                        </div>
+                        <p class="product-detail__copy-status" data-copy-status role="status" aria-live="polite" aria-atomic="true"></p>
+                    @endif
+                    <div class="product-detail__price">
+                        <span>Giá mẫu</span>
+                        <strong>{{ $price !== null ? number_format((float) $price, 0, ',', '.') . 'đ' : 'Liên hệ' }}</strong>
+                    </div>
+
+                    @if($specifications->isNotEmpty())
+                        <dl class="product-detail__specifications">
+                            @foreach($specifications as $label => $value)
+                                <div><dt>{{ $label }}</dt><dd>{{ $value }}</dd></div>
+                            @endforeach
+                        </dl>
+                    @endif
+
+                    <div class="product-detail__download">
+                        @if(filled($product->free_download_url))
+                            <a class="product-detail__action product-detail__action--primary" href="{{ $product->free_download_url }}" target="_blank" rel="noopener noreferrer">Tải miễn phí <span aria-hidden="true">↗</span></a>
+                        @else
+                            <a class="product-detail__action product-detail__action--primary" href="https://zalo.me/0869252228" target="_blank" rel="noopener noreferrer">Liên hệ nhận mẫu <span aria-hidden="true">↗</span></a>
+                        @endif
+                        @if(filled($product->download_note))<p class="product-detail__download-note">{{ $product->download_note }}</p>@endif
+                        <p class="product-detail__guidance">{{ filled($product->free_download_url) ? 'Liên kết tải mở trong tab mới. Kiểm tra định dạng và nội dung tệp trước khi sử dụng.' : 'Gửi mã mẫu qua Zalo để hỏi thông tin tệp và cách nhận mẫu.' }}</p>
+                    </div>
+                    <div class="product-detail__contact-actions">
+                        <a class="product-detail__action" href="https://zalo.me/0869252228" target="_blank" rel="noopener noreferrer">Hỏi qua Zalo ↗</a>
+                        <a class="product-detail__action" href="tel:0869252228">Gọi 0869 252 228</a>
+                    </div>
+                    <aside class="product-detail__service" aria-label="Hỗ trợ thiết kế">
+                        <strong>Duy Hoang · Hỗ trợ mẫu CNC</strong>
+                        <p>Cần chỉnh sửa hoặc tìm mẫu? Gửi mã mẫu, kích thước và yêu cầu thực tế qua Zalo để trao đổi.</p>
+                    </aside>
+                </section>
+            </div>
+
+            @if(filled($product->description))
+                <section class="product-detail__information" aria-labelledby="product-description-title">
+                    <div><p class="cnc-kicker">VỀ THIẾT KẾ</p><h2 id="product-description-title">Chi tiết mẫu</h2></div>
+                    <div class="product-detail__description">{{ $product->description }}</div>
+                </section>
+            @endif
+
+            @if(!empty($product->tags))
+                <section class="product-detail__tags" aria-labelledby="product-tags-title">
+                    <h2 id="product-tags-title">Từ khóa</h2>
+                    <ul>
+                        @foreach($product->tags as $tag)
+                            <li><a href="{{ route('storefront.products.index', ['tag' => $tag]) }}">{{ $tag }}</a></li>
+                        @endforeach
+                    </ul>
+                </section>
+            @endif
+
+            @if(isset($relatedProducts) && $relatedProducts->isNotEmpty())
+                <section class="product-detail__related cnc-shelf" aria-labelledby="related-products-title">
+                    <div class="cnc-shelf__heading">
+                        <div><p class="cnc-kicker">KHÁM PHÁ THÊM</p><h2 id="related-products-title">Mẫu liên quan</h2></div>
+                        <a class="cnc-more" href="{{ route('storefront.products.index') }}">Xem kho mẫu ↗</a>
+                    </div>
+                    <div class="cnc-grid">
+                        @foreach($relatedProducts->take(4) as $relatedProduct)
+                            @include('partials.catalog-card', ['product' => $relatedProduct])
+                        @endforeach
+                    </div>
+                </section>
+            @endif
         </div>
-    </div>
-</main>
-<footer class="footer product-detail__footer"><div class="container footer__bottom"><span>© 2024 khomau3d - Kho mẫu CNC. Thủ công với yêu thương.</span><a href="{{ route('home') }}">Quay lại trang chủ ↗</a></div></footer>
-@include('partials.storefront-contact')
+    </main>
+    @include('partials.catalog-footer')
+</div>
 @endsection
