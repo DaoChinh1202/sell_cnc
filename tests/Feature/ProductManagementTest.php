@@ -92,6 +92,123 @@ class ProductManagementTest extends TestCase
         $this->assertDatabaseCount('products', 2);
     }
 
+    public function test_product_can_be_created_without_watermark(): void
+    {
+        config(['images.font' => '/missing-font.ttf']);
+        $this->partialMock(ProductImageService::class, function (MockInterface $mock): void {
+            $mock->shouldNotReceive('storeWatermarked');
+        });
+
+        $this->post(route('products.store'), [
+            'category_id' => $this->category()->id,
+            'name' => 'Ảnh không watermark',
+            'price' => 100000,
+            'status' => 'active',
+            'apply_watermark' => '0',
+            'image' => UploadedFile::fake()->image('product.png', 320, 240),
+        ])->assertRedirect(route('inventory'))->assertSessionHasNoErrors()
+            ->assertSessionHas('success', 'Đã thêm sản phẩm. Ảnh được lưu dưới dạng WebP không chèn watermark.');
+
+        $product = Product::sole();
+        Storage::disk('public')->assertExists($product->image);
+        $this->assertSame('image/webp', mime_content_type(Storage::disk('public')->path($product->image)));
+    }
+
+    public function test_replacing_an_image_without_watermark_removes_the_previous_image(): void
+    {
+        $product = $this->legacyProduct();
+        Storage::disk('public')->put($product->image, 'old image');
+        config(['images.font' => '/missing-font.ttf']);
+        $this->partialMock(ProductImageService::class, function (MockInterface $mock): void {
+            $mock->shouldNotReceive('storeWatermarked');
+        });
+
+        $this->put(route('products.update', $product), [
+            'category_id' => $product->category_id,
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'price' => $product->price,
+            'status' => 'active',
+            'apply_watermark' => '0',
+            'image' => UploadedFile::fake()->image('replacement.jpg', 320, 240),
+        ])->assertRedirect(route('products.show', $product))->assertSessionHasNoErrors();
+
+        Storage::disk('public')->assertMissing($product->image);
+        Storage::disk('public')->assertExists($product->fresh()->image);
+    }
+
+    public function test_watermark_option_is_validated_and_preserved_after_validation_errors(): void
+    {
+        $this->category();
+        $this->from(route('products.create'))->post(route('products.store'), [
+            'apply_watermark' => 'invalid',
+        ])->assertSessionHasErrors('apply_watermark');
+
+        $this->from(route('products.create'))->post(route('products.store'), [
+            'apply_watermark' => '0',
+        ])->assertSessionHasErrors('image');
+
+        $this->get(route('products.create'))->assertOk()
+            ->assertSee('id="productWatermark"', false)
+            ->assertDontSee('value="1" checked aria-describedby="productWatermarkHelp"', false);
+    }
+
+    public function test_create_save_failure_reports_a_product_error_and_deletes_the_uploaded_image(): void
+    {
+        $category = $this->category();
+        Product::creating(function (): void {
+            throw new \RuntimeException('Simulated product save failure.');
+        });
+
+        try {
+            $this->from(route('products.create'))->post(route('products.store'), [
+                'category_id' => $category->id,
+                'name' => 'Mẫu thử lỗi lưu',
+                'price' => 100000,
+                'status' => 'active',
+                'apply_watermark' => '0',
+                'image' => UploadedFile::fake()->image('product.png', 320, 240),
+            ])->assertRedirect(route('products.create'))
+                ->assertSessionHasErrors('product')->assertSessionDoesntHaveErrors('image');
+        } finally {
+            Product::flushEventListeners();
+        }
+
+        $this->assertDatabaseCount('products', 0);
+        $this->assertSame([], Storage::disk('public')->allFiles());
+        $this->get(route('products.create'))->assertOk()
+            ->assertSee('Không thể lưu sản phẩm. Vui lòng thử lại hoặc liên hệ quản trị viên.');
+    }
+
+    public function test_update_save_failure_keeps_the_previous_image_and_deletes_the_replacement(): void
+    {
+        $product = $this->legacyProduct();
+        Storage::disk('public')->put($product->image, 'previous image');
+        Product::updating(function (): void {
+            throw new \RuntimeException('Simulated product save failure.');
+        });
+
+        try {
+            $this->from(route('products.edit', $product))->put(route('products.update', $product), [
+                'category_id' => $product->category_id,
+                'name' => 'Tên mới chưa lưu',
+                'sku' => $product->sku,
+                'price' => $product->price,
+                'status' => 'active',
+                'apply_watermark' => '0',
+                'image' => UploadedFile::fake()->image('replacement.png', 320, 240),
+            ])->assertRedirect(route('products.edit', $product))
+                ->assertSessionHasErrors('product')->assertSessionDoesntHaveErrors('image');
+        } finally {
+            Product::flushEventListeners();
+        }
+
+        $this->assertSame($product->image, $product->fresh()->image);
+        $this->assertSame([$product->image], Storage::disk('public')->allFiles());
+        $this->get(route('products.edit', $product))->assertOk()
+            ->assertSee('Không thể lưu sản phẩm. Vui lòng thử lại hoặc liên hệ quản trị viên.');
+    }
+
     public function test_create_form_explains_automatic_sku_without_an_editable_sku_field(): void
     {
         $this->category();
@@ -138,6 +255,7 @@ class ProductManagementTest extends TestCase
             'tax' => 999,
             'discount' => 999,
             'unit' => 'Must not be saved',
+            'apply_watermark' => '0',
         ])->assertRedirect(route('products.show', $product))->assertSessionHasNoErrors();
 
         $this->assertDatabaseHas('products', [
@@ -167,6 +285,7 @@ class ProductManagementTest extends TestCase
             }
             $response->assertSee('name="price"', false)
                 ->assertSee('name="image"', false)
+                ->assertSee('name="apply_watermark"', false)
                 ->assertSee('name="is_featured"', false)
                 ->assertSee('name="free_download_url"', false);
         }

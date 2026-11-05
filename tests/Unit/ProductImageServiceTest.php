@@ -102,6 +102,34 @@ class ProductImageServiceTest extends TestCase
         ], config('images.watermark_lines'));
     }
 
+    public function test_image_without_watermark_is_resized_to_webp_without_adding_text(): void
+    {
+        Storage::fake('public');
+        config([
+            'images.font' => '/missing-font.ttf',
+            'images.quality' => 100,
+            'images.max_width' => 320,
+            'images.max_height' => 320,
+        ]);
+        $path = (new ProductImageService)->storeWithoutWatermark($this->upload('png', 640, 480));
+        $image = imagecreatefromwebp(Storage::disk('public')->path($path));
+
+        try {
+            $this->assertSame(320, imagesx($image));
+            $this->assertSame(240, imagesy($image));
+            for ($y = 0; $y < imagesy($image); $y++) {
+                for ($x = 0; $x < imagesx($image); $x++) {
+                    $pixel = imagecolorsforindex($image, imagecolorat($image, $x, $y));
+                    if (max($pixel['red'], $pixel['green'], $pixel['blue']) > 10) {
+                        $this->fail('An unwatermarked black image must not contain text pixels.');
+                    }
+                }
+            }
+        } finally {
+            imagedestroy($image);
+        }
+    }
+
     public function test_transparent_png_remains_transparent_outside_the_watermark(): void
     {
         Storage::fake('public');

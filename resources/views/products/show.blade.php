@@ -28,7 +28,7 @@
         <div class="card-body p-4 d-flex align-items-center justify-content-center">
           <img src="{{ '/storage/'.$product->image }}" alt="{{ $product->name }}" class="img-fluid rounded" style="max-height: 460px; object-fit: contain;">
         </div>
-        <div class="card-footer bg-white text-muted small">Ảnh hiển thị là bản WebP đã watermark.</div>
+        <div class="card-footer bg-white text-muted small">Ảnh hiển thị là ảnh sản phẩm đã lưu.</div>
       </div>
     </div>
     <div class="col-lg-7">

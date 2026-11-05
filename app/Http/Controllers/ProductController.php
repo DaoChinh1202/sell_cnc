@@ -47,20 +47,36 @@ class ProductController extends Controller
     public function store(Request $request, ProductImageService $productImages): RedirectResponse
     {
         $data = $this->validatedData($request);
+        $watermark = $request->boolean('apply_watermark', true);
+        unset($data['apply_watermark']);
+        $newImage = null;
+        $savingProduct = false;
 
         try {
             $data['sku'] = $this->generateSku();
-            $data['image'] = $productImages->storeWatermarked($request->file('image'));
+            $newImage = $watermark
+                ? $productImages->storeWatermarked($request->file('image'))
+                : $productImages->storeWithoutWatermark($request->file('image'));
+            $data['image'] = $newImage;
+            $savingProduct = true;
             Product::query()->create($data);
         } catch (Throwable $exception) {
+            if ($newImage !== null) {
+                Storage::disk('public')->delete($newImage);
+            }
+
             report($exception);
 
-            return back()->withInput()->withErrors([
+            return back()->withInput()->withErrors($savingProduct ? [
+                'product' => 'Không thể lưu sản phẩm. Vui lòng thử lại hoặc liên hệ quản trị viên.',
+            ] : [
                 'image' => 'Không thể xử lý ảnh. Vui lòng thử lại bằng ảnh JPEG, PNG hoặc WebP khác.',
             ]);
         }
 
-        return to_route('inventory')->with('success', 'Đã thêm sản phẩm. Ảnh được lưu dưới dạng WebP có watermark.');
+        return to_route('inventory')->with('success', $watermark
+            ? 'Đã thêm sản phẩm. Ảnh được lưu dưới dạng WebP có watermark.'
+            : 'Đã thêm sản phẩm. Ảnh được lưu dưới dạng WebP không chèn watermark.');
     }
 
     public function show(Product $product): View
@@ -83,15 +99,21 @@ class ProductController extends Controller
     public function update(Request $request, Product $product, ProductImageService $productImages): RedirectResponse
     {
         $data = $this->validatedData($request, $product);
+        $watermark = $request->boolean('apply_watermark', true);
+        unset($data['apply_watermark']);
         $newImage = null;
         $previousImage = $product->image;
+        $savingProduct = false;
 
         try {
             if ($request->hasFile('image')) {
-                $newImage = $productImages->storeWatermarked($request->file('image'));
+                $newImage = $watermark
+                    ? $productImages->storeWatermarked($request->file('image'))
+                    : $productImages->storeWithoutWatermark($request->file('image'));
                 $data['image'] = $newImage;
             }
 
+            $savingProduct = true;
             $product->update($data);
         } catch (Throwable $exception) {
             if ($newImage !== null) {
@@ -100,7 +122,9 @@ class ProductController extends Controller
 
             report($exception);
 
-            return back()->withInput()->withErrors([
+            return back()->withInput()->withErrors($savingProduct ? [
+                'product' => 'Không thể lưu sản phẩm. Vui lòng thử lại hoặc liên hệ quản trị viên.',
+            ] : [
                 'image' => 'Không thể xử lý ảnh. Vui lòng thử lại bằng ảnh JPEG, PNG hoặc WebP khác.',
             ]);
         }
@@ -140,6 +164,7 @@ class ProductController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'in:active,inactive,draft'],
             'is_featured' => ['sometimes', 'boolean'],
+            'apply_watermark' => ['sometimes', 'boolean'],
             'image' => [
                 $product === null ? 'required' : 'nullable',
                 'file',

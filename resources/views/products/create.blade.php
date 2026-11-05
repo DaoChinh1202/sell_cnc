@@ -8,7 +8,7 @@
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
         <div>
           <h1 class="fs-3 mb-1">Thêm sản phẩm</h1>
-          <p class="mb-0">Ảnh tải lên sẽ được chuyển sang WebP và đóng watermark trước khi lưu.</p>
+          <p class="mb-0">Ảnh tải lên được chuyển sang WebP. Bạn có thể chọn chèn watermark trước khi lưu.</p>
         </div>
         <a href="{{ route('inventory') }}" class="btn btn-primary">Về danh sách kho hàng</a>
       </div>
@@ -24,7 +24,11 @@
 
   @if ($errors->any())
     <div class="alert alert-danger">
-      <strong>Không thể lưu sản phẩm.</strong> Vui lòng kiểm tra các trường bên dưới.
+      @if ($errors->has('product'))
+        {{ $errors->first('product') }}
+      @else
+        <strong>Không thể lưu sản phẩm.</strong> Vui lòng kiểm tra các trường bên dưới.
+      @endif
     </div>
   @endif
 
@@ -71,6 +75,7 @@
                 <input type="file" class="form-control @error('image') is-invalid @enderror" id="productImage" name="image" accept="image/jpeg,image/png,image/webp" required>
                 <div class="form-text">Chỉ nhận JPEG, PNG, WebP; tối đa 5 MB; kích thước từ 100×100 đến 6000×6000 px.</div>
                 @error('image') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                @include('products._watermark-option')
               </div>
               <div class="mb-3">
                 <label for="productFreeDownloadUrl" class="form-label">Link tải miễn phí</label>

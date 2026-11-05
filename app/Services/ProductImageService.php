@@ -11,6 +11,16 @@ class ProductImageService
 {
     public function storeWatermarked(UploadedFile $uploadedFile): string
     {
+        return $this->storeImage($uploadedFile, true);
+    }
+
+    public function storeWithoutWatermark(UploadedFile $uploadedFile): string
+    {
+        return $this->storeImage($uploadedFile, false);
+    }
+
+    private function storeImage(UploadedFile $uploadedFile, bool $watermark): string
+    {
         $sourcePath = $uploadedFile->getRealPath();
 
         if ($sourcePath === false) {
@@ -30,14 +40,16 @@ class ProductImageService
 
         try {
             $image = $this->resize($image);
-            $this->applyWatermark($image);
+            if ($watermark) {
+                $this->applyWatermark($image);
+            }
 
             $path = 'products/'.Str::uuid().'.webp';
             Storage::disk('public')->makeDirectory('products');
             $saved = imagewebp($image, Storage::disk('public')->path($path), config('images.quality'));
 
             if (! $saved) {
-                throw new RuntimeException('Không thể lưu ảnh đã watermark.');
+                throw new RuntimeException('Không thể lưu ảnh sản phẩm.');
             }
 
             return $path;
@@ -149,7 +161,7 @@ class ProductImageService
             $clear = imagecolorallocatealpha($rotated, 0, 0, 0, 127);
             for ($row = 0; $row < imagesy($rotated); $row++) {
                 for ($column = 0; $column < imagesx($rotated); $column++) {
-                    if (((imagecolorat($rotated, $column, $row) >> 24) & 0x7f) >= 126) {
+                    if (((imagecolorat($rotated, $column, $row) >> 24) & 0x7F) >= 126) {
                         imagesetpixel($rotated, $column, $row, $clear);
                     }
                 }

@@ -6,13 +6,19 @@
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
     <div>
       <h1 class="fs-3 mb-1">Chỉnh sửa sản phẩm</h1>
-      <p class="mb-0">Cập nhật thông tin và ảnh đã watermark của sản phẩm.</p>
+      <p class="mb-0">Cập nhật thông tin và ảnh sản phẩm.</p>
     </div>
     <a href="{{ route('products.show', $product) }}" class="btn btn-outline-secondary"><i class="ti ti-arrow-left me-1"></i> Xem chi tiết</a>
   </div>
 
   @if ($errors->any())
-    <div class="alert alert-danger"><strong>Không thể cập nhật sản phẩm.</strong> Vui lòng kiểm tra các trường bên dưới.</div>
+    <div class="alert alert-danger">
+      @if ($errors->has('product'))
+        {{ $errors->first('product') }}
+      @else
+        <strong>Không thể cập nhật sản phẩm.</strong> Vui lòng kiểm tra các trường bên dưới.
+      @endif
+    </div>
   @endif
 
   <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data">
@@ -55,7 +61,20 @@
       </div>
     </div>
 
-    <div class="card mb-4"><div class="card-header bg-white py-3"><h2 class="h5 mb-0">Hình ảnh sản phẩm</h2></div><div class="card-body p-4"><div class="d-flex align-items-center gap-3 mb-3"><img src="{{ '/storage/'.$product->image }}" alt="{{ $product->name }}" class="avatar avatar-xl rounded object-fit-cover"><div><div class="fw-semibold">Ảnh hiện tại</div><small class="text-muted">Đây là ảnh WebP đã watermark.</small></div></div><label for="productImage" class="form-label">Thay ảnh mới</label><input type="file" class="form-control @error('image') is-invalid @enderror" id="productImage" name="image" accept="image/png,image/jpeg,image/webp"><div class="form-text">Nếu thay ảnh, ảnh cũ sẽ bị xóa. Ảnh mới được chuyển sang WebP và watermark trước khi lưu.</div>@error('image')<div class="invalid-feedback">{{ $message }}</div>@enderror</div></div>
+    <div class="card mb-4">
+      <div class="card-header bg-white py-3"><h2 class="h5 mb-0">Hình ảnh sản phẩm</h2></div>
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <img src="{{ '/storage/'.$product->image }}" alt="{{ $product->name }}" class="avatar avatar-xl rounded object-fit-cover">
+          <div class="fw-semibold">Ảnh hiện tại</div>
+        </div>
+        <label for="productImage" class="form-label">Thay ảnh mới</label>
+        <input type="file" class="form-control @error('image') is-invalid @enderror" id="productImage" name="image" accept="image/png,image/jpeg,image/webp">
+        <div class="form-text">Nếu thay ảnh, ảnh cũ sẽ bị xóa sau khi lưu thành công. Để trống để giữ ảnh hiện tại.</div>
+        @error('image')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        @include('products._watermark-option')
+      </div>
+    </div>
 
     <div class="card mb-4"><div class="card-header bg-white py-3"><h2 class="h5 mb-0">Trạng thái</h2></div><div class="card-body p-4"><label for="productStatus" class="form-label">Trạng thái sản phẩm</label><select class="form-select" id="productStatus" name="status" style="max-width: 360px;"><option value="active" @selected(old('status', $product->status) === 'active')>Đang hoạt động</option><option value="inactive" @selected(old('status', $product->status) === 'inactive')>Ngừng hoạt động</option><option value="draft" @selected(old('status', $product->status) === 'draft')>Bản nháp</option></select></div></div>
 
