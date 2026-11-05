@@ -209,6 +209,23 @@ class ProductManagementTest extends TestCase
             ->assertSee('Không thể lưu sản phẩm. Vui lòng thử lại hoặc liên hệ quản trị viên.');
     }
 
+    public function test_product_forms_include_local_image_preview_and_keep_the_existing_image(): void
+    {
+        $product = $this->legacyProduct();
+        foreach ([route('products.create'), route('products.edit', $product)] as $url) {
+            $this->get($url)->assertOk()
+                ->assertSee('data-product-image-preview', false)
+                ->assertSee('data-input-id="productImage"', false)
+                ->assertSee('data-preview-panel hidden', false)
+                ->assertSee('data-preview-image', false)
+                ->assertSee('Bỏ chọn ảnh mới')
+                ->assertSee('Ảnh đã được tối ưu và chuyển sang WebP theo tùy chọn watermark, chưa lưu vào sản phẩm.')
+                ->assertSee('data-preview-url="'.route('products.image-preview').'"', false);
+        }
+        $this->get(route('products.edit', $product))->assertOk()
+            ->assertSee('/storage/'.$product->image, false)->assertSee('Ảnh hiện tại');
+    }
+
     public function test_create_form_explains_automatic_sku_without_an_editable_sku_field(): void
     {
         $this->category();

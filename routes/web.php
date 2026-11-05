@@ -89,6 +89,7 @@ Route::prefix('admin')->middleware(['auth', 'auth.session', 'admin'])->group(fun
     Route::view('/', 'dashboard', ['navActive' => 'dashboard'])->name('dashboard');
     Route::get('/inventory', [ProductController::class, 'index'])->name('inventory');
     Route::get('/create-product', [ProductController::class, 'create'])->name('products.create');
+    Route::post('/products/image-preview', [ProductController::class, 'previewImage'])->middleware('throttle:30,1')->name('products.image-preview');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
     Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
     Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');

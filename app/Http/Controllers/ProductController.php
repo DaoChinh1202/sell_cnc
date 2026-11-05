@@ -44,6 +44,29 @@ class ProductController extends Controller
         ]);
     }
 
+    public function previewImage(Request $request, ProductImageService $productImages): \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+    {
+        $request->validate([
+            'image' => $this->imageRules(true),
+            'apply_watermark' => ['required', 'boolean'],
+        ]);
+
+        try {
+            $bytes = $productImages->preview($request->file('image'), $request->boolean('apply_watermark'));
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json(['message' => 'Không thể xử lý ảnh xem trước. Vui lòng thử lại hoặc chọn ảnh khác.'], 500)
+                ->header('Cache-Control', 'no-store, private');
+        }
+
+        return response($bytes)->withHeaders([
+            'Content-Type' => 'image/webp',
+            'Cache-Control' => 'no-store, private',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
     public function store(Request $request, ProductImageService $productImages): RedirectResponse
     {
         $data = $this->validatedData($request);
@@ -145,6 +168,18 @@ class ProductController extends Controller
         return $sku;
     }
 
+    private function imageRules(bool $required): array
+    {
+        return [
+            $required ? 'required' : 'nullable',
+            'file',
+            'image',
+            'mimes:jpg,jpeg,png,webp',
+            'max:5120',
+            'dimensions:min_width=100,min_height=100,max_width=6000,max_height=6000',
+        ];
+    }
+
     private function validatedData(Request $request, ?Product $product = null): array
     {
         $data = $request->validate([
@@ -165,14 +200,7 @@ class ProductController extends Controller
             'status' => ['required', 'in:active,inactive,draft'],
             'is_featured' => ['sometimes', 'boolean'],
             'apply_watermark' => ['sometimes', 'boolean'],
-            'image' => [
-                $product === null ? 'required' : 'nullable',
-                'file',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120',
-                'dimensions:min_width=100,min_height=100,max_width=6000,max_height=6000',
-            ],
+            'image' => $this->imageRules($product === null),
         ]);
 
         if (array_key_exists('tags', $data)) {

@@ -75,6 +75,7 @@
                 <input type="file" class="form-control @error('image') is-invalid @enderror" id="productImage" name="image" accept="image/jpeg,image/png,image/webp" required>
                 <div class="form-text">Chỉ nhận JPEG, PNG, WebP; tối đa 5 MB; kích thước từ 100×100 đến 6000×6000 px.</div>
                 @error('image') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                @include('products._image-preview')
                 @include('products._watermark-option')
               </div>
               <div class="mb-3">

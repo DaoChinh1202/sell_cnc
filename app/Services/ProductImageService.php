@@ -21,6 +21,44 @@ class ProductImageService
 
     private function storeImage(UploadedFile $uploadedFile, bool $watermark): string
     {
+        return $this->processImage($uploadedFile, $watermark, function (\GdImage $image): string {
+            $path = 'products/'.Str::uuid().'.webp';
+            Storage::disk('public')->makeDirectory('products');
+            if (! imagewebp($image, Storage::disk('public')->path($path), config('images.quality'))) {
+                throw new RuntimeException('Không thể lưu ảnh sản phẩm.');
+            }
+
+            return $path;
+        });
+    }
+
+    public function preview(UploadedFile $uploadedFile, bool $watermark): string
+    {
+        return $this->processImage($uploadedFile, $watermark, function (\GdImage $image): string {
+            $stream = fopen('php://temp', 'w+b');
+            if ($stream === false) {
+                throw new RuntimeException('Không thể tạo ảnh xem trước.');
+            }
+
+            try {
+                if (! imagewebp($image, $stream, config('images.quality'))) {
+                    throw new RuntimeException('Không thể tạo ảnh xem trước.');
+                }
+                rewind($stream);
+                $bytes = stream_get_contents($stream);
+                if ($bytes === false || $bytes === '') {
+                    throw new RuntimeException('Không thể đọc ảnh xem trước.');
+                }
+
+                return $bytes;
+            } finally {
+                fclose($stream);
+            }
+        });
+    }
+
+    private function processImage(UploadedFile $uploadedFile, bool $watermark, callable $output): string
+    {
         $sourcePath = $uploadedFile->getRealPath();
 
         if ($sourcePath === false) {
@@ -44,15 +82,7 @@ class ProductImageService
                 $this->applyWatermark($image);
             }
 
-            $path = 'products/'.Str::uuid().'.webp';
-            Storage::disk('public')->makeDirectory('products');
-            $saved = imagewebp($image, Storage::disk('public')->path($path), config('images.quality'));
-
-            if (! $saved) {
-                throw new RuntimeException('Không thể lưu ảnh sản phẩm.');
-            }
-
-            return $path;
+            return $output($image);
         } finally {
             imagedestroy($image);
         }

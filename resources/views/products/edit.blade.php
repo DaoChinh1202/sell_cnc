@@ -72,6 +72,7 @@
         <input type="file" class="form-control @error('image') is-invalid @enderror" id="productImage" name="image" accept="image/png,image/jpeg,image/webp">
         <div class="form-text">Nếu thay ảnh, ảnh cũ sẽ bị xóa sau khi lưu thành công. Để trống để giữ ảnh hiện tại.</div>
         @error('image')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        @include('products._image-preview')
         @include('products._watermark-option')
       </div>
     </div>
