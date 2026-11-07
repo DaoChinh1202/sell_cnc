@@ -34,7 +34,7 @@ class ProductImageServiceTest extends TestCase
             'images.quality' => 100,
             'images.max_width' => 2000,
             'images.max_height' => 2000,
-            // Old logo settings must no longer trigger file access or rendering.
+            // Legacy logo settings must not override the mandatory brand asset.
             'images.watermark_logo_path' => '/missing-logo.png',
             'images.watermark_logo_opacity' => 100,
         ]);
@@ -53,6 +53,10 @@ class ProductImageServiceTest extends TestCase
             $outside = 0;
             for ($y = 0; $y < $outputHeight; $y++) {
                 for ($x = 0; $x < $outputWidth; $x++) {
+                    // Check the existing text independently of the new bottom-right badge.
+                    if ($x > $outputWidth * 0.75 && $y > $outputHeight * 0.70) {
+                        continue;
+                    }
                     $pixel = imagecolorsforindex($image, imagecolorat($image, $x, $y));
                     if ($pixel['red'] < 40) {
                         continue;
@@ -117,16 +121,45 @@ class ProductImageServiceTest extends TestCase
         try {
             $this->assertSame(320, imagesx($image));
             $this->assertSame(240, imagesy($image));
+            $logoPixels = 0;
             for ($y = 0; $y < imagesy($image); $y++) {
                 for ($x = 0; $x < imagesx($image); $x++) {
                     $pixel = imagecolorsforindex($image, imagecolorat($image, $x, $y));
                     if (max($pixel['red'], $pixel['green'], $pixel['blue']) > 10) {
-                        $this->fail('An unwatermarked black image must not contain text pixels.');
+                        $this->assertGreaterThan(240, $x, 'Only the bottom-right logo may be added when text is disabled.');
+                        $this->assertGreaterThan(170, $y);
+                        $logoPixels++;
                     }
                 }
             }
+            $this->assertGreaterThan(0, $logoPixels, 'The logo is mandatory even when text is disabled.');
         } finally {
             imagedestroy($image);
+        }
+    }
+
+    #[DataProvider('images')]
+    public function test_logo_is_present_in_preview_with_either_text_option(
+        string $format, int $width, int $height, int $outputWidth, int $outputHeight,
+    ): void {
+        config(['images.max_width' => 2000, 'images.max_height' => 2000, 'images.quality' => 100]);
+        foreach ([false, true] as $watermark) {
+            $bytes = (new ProductImageService)->preview($this->upload($format, $width, $height), $watermark);
+            $image = imagecreatefromstring($bytes);
+            try {
+                $whitePixels = 0;
+                for ($y = (int) ($outputHeight * 0.80); $y < $outputHeight; $y++) {
+                    for ($x = (int) ($outputWidth * 0.80); $x < $outputWidth; $x++) {
+                        $pixel = imagecolorsforindex($image, imagecolorat($image, $x, $y));
+                        if (min($pixel['red'], $pixel['green'], $pixel['blue']) > 100) {
+                            $whitePixels++;
+                        }
+                    }
+                }
+                $this->assertGreaterThan(0, $whitePixels, 'Both preview options must contain the bottom-right logo.');
+            } finally {
+                imagedestroy($image);
+            }
         }
     }
 

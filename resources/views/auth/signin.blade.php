@@ -7,7 +7,7 @@
         <div class="card-body p-4 p-sm-5">
             <div class="text-center mb-4">
                 <a href="{{ route('home') }}" class="mb-3 d-inline-block">
-                    <img src="{{ asset('assets/images/khomau3d_logo_no_tagline.svg') }}" alt="Kho mẫu 3D" width="132" height="88">
+                    <img src="{{ asset('assets/images/khomau3d-logo.webp') }}" alt="Kho mẫu 3D" width="180" height="120" style="object-fit: contain;">
                 </a>
                 <h1 class="card-title h5">Đăng nhập quản trị</h1>
                 <p class="small text-muted">Quản lý kho mẫu thiết kế CNC khomau3d.</p>

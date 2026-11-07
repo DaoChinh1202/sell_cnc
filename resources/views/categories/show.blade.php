@@ -11,7 +11,7 @@
 @section('content')
 <div class="announcement"><div class="container announcement__inner"><span>✦ Thư viện mẫu CNC dành cho xưởng</span><span class="announcement__right">Thiết kế rõ nét <i></i> Sẵn sàng để tham khảo</span></div></div>
 <header class="site-header">
-    <div class="container site-header__main"><button class="menu-toggle" aria-label="Mở menu">☰</button><a href="{{ route('home') }}" class="brand"><img src="{{ asset('assets/images/khomau3d_logo_no_tagline.svg') }}" alt="Kho mẫu 3D"></a><form class="search" method="get" action="{{ route('storefront.products.index') }}"><input type="search" name="q" maxlength="100" placeholder="Tìm kiếm mẫu CNC..." aria-label="Tìm kiếm"><button aria-label="Tìm kiếm">⌕</button></form></div>
+    <div class="container site-header__main"><button class="menu-toggle" aria-label="Mở menu">☰</button><a href="{{ route('home') }}" class="brand"><img src="{{ asset('assets/images/khomau3d-logo.webp') }}" alt="Kho mẫu 3D" width="132" height="88" style="object-fit: contain;"></a><form class="search" method="get" action="{{ route('storefront.products.index') }}"><input type="search" name="q" maxlength="100" placeholder="Tìm kiếm mẫu CNC..." aria-label="Tìm kiếm"><button aria-label="Tìm kiếm">⌕</button></form></div>
     <nav class="main-nav"><div class="container main-nav__inner"><a class="all-categories" href="{{ route('home') }}#categories">☷ <span>Tất cả danh mục</span></a><div class="nav-links"><a href="{{ route('home') }}">Trang chủ</a><a class="active" href="{{ route('home') }}#products">Thư viện mẫu</a><a href="{{ route('home') }}#categories">Danh mục CNC</a><a href="{{ route('home') }}#contact">Liên hệ</a></div></div></nav>
 </header>
 

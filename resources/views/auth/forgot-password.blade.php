@@ -6,7 +6,7 @@
     <div class="card" style="max-width:460px; width:100%;">
         <div class="card-body p-4 p-sm-5">
             <div class="text-center mb-4">
-                <a href="{{ route('home') }}" class="mb-3 d-inline-block"><img src="{{ asset('assets/images/khomau3d_logo_no_tagline.svg') }}" alt="Kho mẫu 3D" width="132" height="88"></a>
+                <a href="{{ route('home') }}" class="mb-3 d-inline-block"><img src="{{ asset('assets/images/khomau3d-logo.webp') }}" alt="Kho mẫu 3D" width="180" height="120" style="object-fit: contain;"></a>
                 <h1 class="h5">Quên mật khẩu?</h1>
                 <p class="small text-muted">Nhập tên đăng nhập quản trị. Liên kết đặt lại mật khẩu sẽ được gửi tới email khôi phục của tài khoản.</p>
             </div>

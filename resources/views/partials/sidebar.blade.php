@@ -1,7 +1,7 @@
 <aside id="sidebar" class="sidebar">
     <div class="logo-area">
-        <a href="{{ route('dashboard') }}" class="d-inline-flex">
-            <img src="{{ asset('assets/images/khomau3d_logo_no_tagline.svg') }}" alt="Kho mẫu 3D" width="48" height="32">
+        <a href="{{ route('dashboard') }}" class="d-inline-flex" style="min-width: 0;">
+            <img src="{{ asset('assets/images/khomau3d-logo.webp') }}" alt="Kho mẫu 3D" width="72" height="48" style="max-width: 100%; height: auto; object-fit: contain;">
         </a>
     </div>
     <ul class="nav flex-column">

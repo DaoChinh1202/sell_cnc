@@ -82,6 +82,8 @@ class ProductImageService
                 $this->applyWatermark($image);
             }
 
+            $this->applyLogo($image);
+
             return $output($image);
         } finally {
             imagedestroy($image);
@@ -124,6 +126,37 @@ class ProductImageService
         imagedestroy($image);
 
         return $resized;
+    }
+
+    private function applyLogo(\GdImage $image): void
+    {
+        $path = public_path('assets/images/khomau3d-logo.webp');
+        if (! is_file($path) || ! is_readable($path)) {
+            throw new RuntimeException('Không tìm thấy logo để chèn vào ảnh sản phẩm.');
+        }
+
+        $logo = imagecreatefromwebp($path);
+        if ($logo === false) {
+            throw new RuntimeException('Không thể đọc logo để chèn vào ảnh sản phẩm.');
+        }
+
+        try {
+            $width = imagesx($image);
+            $height = imagesy($image);
+            $margin = max(1, (int) round(min($width, $height) * 0.02));
+            // Limit both dimensions so the badge also fits panoramic and portrait uploads.
+            $scale = min($width * 0.20 / imagesx($logo), $height * 0.25 / imagesy($logo));
+            $logoWidth = max(1, (int) round(imagesx($logo) * $scale));
+            $logoHeight = max(1, (int) round(imagesy($logo) * $scale));
+            imagealphablending($image, true);
+            imagesavealpha($image, true);
+
+            if (! imagecopyresampled($image, $logo, max(0, $width - $logoWidth - $margin), max(0, $height - $logoHeight - $margin), 0, 0, $logoWidth, $logoHeight, imagesx($logo), imagesy($logo))) {
+                throw new RuntimeException('Không thể chèn logo vào ảnh sản phẩm.');
+            }
+        } finally {
+            imagedestroy($logo);
+        }
     }
 
     private function applyWatermark(\GdImage $image): void
