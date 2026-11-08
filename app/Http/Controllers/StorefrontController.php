@@ -30,6 +30,7 @@ class StorefrontController extends Controller
             ->where('status', 'active')->firstOrFail();
         $candidates = Product::query()->visible()->with('category')
             ->where('id', '!=', $product->id)->latest()->orderByDesc('id');
+        $relatedLimit = 12;
         $relatedProducts = collect();
 
         if (! empty($product->tags)) {
@@ -37,13 +38,13 @@ class StorefrontController extends Controller
                 foreach ($product->tags as $tag) {
                     $query->orWhereJsonContains('tags', $tag);
                 }
-            })->limit(4)->get();
+            })->limit($relatedLimit)->get();
         }
 
-        if ($relatedProducts->count() < 4) {
+        if ($relatedProducts->count() < $relatedLimit) {
             $sameCategory = (clone $candidates)->where('category_id', $product->category_id)
                 ->whereNotIn('id', $relatedProducts->pluck('id'))
-                ->limit(4 - $relatedProducts->count())->get();
+                ->limit($relatedLimit - $relatedProducts->count())->get();
             $relatedProducts = $relatedProducts->concat($sameCategory);
         }
 

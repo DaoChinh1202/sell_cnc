@@ -126,13 +126,19 @@
             @endif
 
             @if(isset($relatedProducts) && $relatedProducts->isNotEmpty())
-                <section class="product-detail__related cnc-shelf" aria-labelledby="related-products-title">
+                <section class="product-detail__related cnc-shelf" aria-labelledby="related-products-title" aria-roledescription="băng chuyền" data-related-carousel>
                     <div class="cnc-shelf__heading">
                         <div><p class="cnc-kicker">KHÁM PHÁ THÊM</p><h2 id="related-products-title">Mẫu liên quan</h2></div>
                         <a class="cnc-more" href="{{ route('storefront.products.index') }}">Xem kho mẫu ↗</a>
                     </div>
-                    <div class="cnc-grid">
-                        @foreach($relatedProducts->take(4) as $relatedProduct)
+                    <div class="product-detail__related-controls" data-related-controls hidden>
+
+                        <button type="button" data-related-prev aria-controls="related-products-track" aria-label="Xem mẫu liên quan trước"><span aria-hidden="true">←</span></button>
+                        <button type="button" data-related-next aria-controls="related-products-track" aria-label="Xem mẫu liên quan tiếp theo"><span aria-hidden="true">→</span></button>
+                    </div>
+                    <p id="related-products-help" class="sr-only">Vuốt hoặc cuộn ngang để xem thêm mẫu. Các mẫu tự chuyển sau mỗi 5 giây; tạm dừng khi di chuột hoặc đặt tiêu điểm trong khu vực này.</p>
+                    <div id="related-products-track" class="product-detail__related-track" data-related-track tabindex="0" role="group" aria-label="Các mẫu liên quan" aria-describedby="related-products-help">
+                        @foreach($relatedProducts as $relatedProduct)
                             @include('partials.catalog-card', ['product' => $relatedProduct])
                         @endforeach
                     </div>

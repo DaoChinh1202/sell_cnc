@@ -1,3 +1,5 @@
+import { initRelatedProductsCarousel } from './related-products-carousel';
+
 async function copySku(value) {
     try {
         if (navigator.clipboard?.writeText) {
@@ -37,6 +39,8 @@ async function copySku(value) {
 export function initProductDetail() {
     const root = document.querySelector('[data-product-detail]');
     if (!root) return;
+
+    initRelatedProductsCarousel(root);
 
     const copyButton = root.querySelector('[data-copy-sku]');
     const status = root.querySelector('[data-copy-status]');
