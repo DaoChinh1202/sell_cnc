@@ -8,6 +8,8 @@ use App\Services\ProductImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -18,14 +20,19 @@ class ProductController extends Controller
 {
     public function index(Request $request): View
     {
-        $search = trim((string) $request->query('q'));
+        $filters = $request->validate($this->inventoryFilterRules($request));
+        $search = trim($filters['q'] ?? '');
         $products = Product::query()
             ->with('category')
             ->when($search !== '', fn ($query) => $query->where(fn ($query) => $query
                 ->where('name', 'like', "%{$search}%")
                 ->orWhere('sku', 'like', "%{$search}%")
             ))
+            ->when($filters['status'] ?? null, fn ($query, $status) => $query->where('status', $status))
+            ->when($filters['date_from'] ?? null, fn ($query, $date) => $query->where('created_at', '>=', Carbon::parse($date)->startOfDay()))
+            ->when($filters['date_to'] ?? null, fn ($query, $date) => $query->where('created_at', '<', Carbon::parse($date)->addDay()->startOfDay()))
             ->latest()
+            ->orderByDesc('id')
             ->paginate(10)
             ->withQueryString();
 
@@ -33,7 +40,75 @@ class ProductController extends Controller
             'navActive' => 'inventory',
             'products' => $products,
             'search' => $search,
+            'filters' => $filters,
         ]);
+    }
+
+    private function inventoryFilterRules(Request $request): array
+    {
+        return [
+            'q' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', Rule::in(['active', 'inactive', 'draft'])],
+            'date_from' => ['nullable', 'date_format:Y-m-d'],
+            'date_to' => ['nullable', 'date_format:Y-m-d', ...($request->filled('date_from') ? ['after_or_equal:date_from'] : [])],
+        ];
+    }
+
+    public function bulk(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            ...$this->inventoryFilterRules($request),
+            'action' => ['required', Rule::in(['active', 'inactive', 'delete'])],
+            'ids' => ['required', 'array', 'min:1', 'max:100'],
+            'ids.*' => ['required', 'integer', 'distinct', 'exists:products,id'],
+        ]);
+
+        $images = DB::transaction(function () use ($data) {
+            $products = Product::whereIn('id', $data['ids'])->lockForUpdate()->get();
+            if ($products->count() !== count($data['ids'])) {
+                throw ValidationException::withMessages(['ids' => 'Danh sách sản phẩm đã thay đổi. Vui lòng tải lại và chọn lại.']);
+            }
+
+            if ($data['action'] === 'delete') {
+                Product::whereIn('id', $data['ids'])->delete();
+
+                return $products->pluck('image')->filter()->unique()->all();
+            }
+
+            Product::whereIn('id', $data['ids'])->update(['status' => $data['action']]);
+
+            return [];
+        });
+
+        // Delete files only after commit; a storage failure must not undo the database result.
+        $cleanupFailed = false;
+        foreach ($images as $image) {
+            if (! preg_match('~\Aproducts/[a-zA-Z0-9_-]+\.(?:webp|png|jpe?g)\z~i', $image)
+                || Product::where('image', $image)->exists()) {
+                continue;
+            }
+            try {
+                if (! Storage::disk('public')->delete($image)) {
+                    throw new \RuntimeException('Không thể xóa ảnh sản phẩm: '.$image);
+                }
+            } catch (Throwable $exception) {
+                report($exception);
+                $cleanupFailed = true;
+            }
+        }
+
+        $message = match ($data['action']) {
+            'delete' => 'Đã xóa '.count($data['ids']).' sản phẩm.',
+            'active' => 'Đã chuyển '.count($data['ids']).' sản phẩm sang hoạt động.',
+            'inactive' => 'Đã chuyển '.count($data['ids']).' sản phẩm sang ngừng hoạt động.',
+        };
+        $response = to_route('inventory', array_intersect_key($data, array_flip(['q', 'status', 'date_from', 'date_to'])))
+            ->with('success', $message);
+        if ($cleanupFailed) {
+            $response->with('warning', 'Sản phẩm đã được xóa nhưng một số ảnh chưa được dọn dẹp. Vui lòng kiểm tra nhật ký máy chủ.');
+        }
+
+        return $response;
     }
 
     public function create(): View

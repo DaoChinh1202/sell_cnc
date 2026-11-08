@@ -91,6 +91,7 @@ Route::prefix('admin')->middleware(['auth', 'auth.session', 'admin'])->group(fun
     Route::get('/create-product', [ProductController::class, 'create'])->name('products.create');
     Route::post('/products/image-preview', [ProductController::class, 'previewImage'])->middleware('throttle:30,1')->name('products.image-preview');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::post('/products/bulk', [ProductController::class, 'bulk'])->name('products.bulk');
     Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
     Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');

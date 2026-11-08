@@ -2,11 +2,13 @@ import './bootstrap';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import ApexCharts from 'apexcharts';
 import { initProductImagePreviews } from './product-image-preview';
+import { initInventoryBulk } from './inventory-bulk';
 
 window.ApexCharts = ApexCharts;
 
 document.addEventListener('DOMContentLoaded', () => {
     initProductImagePreviews();
+    initInventoryBulk();
     const sidebar = document.getElementById('sidebar');
     const content = document.getElementById('content');
     const topbar = document.getElementById('topbar');
