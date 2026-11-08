@@ -94,7 +94,11 @@ class InventoryManagementTest extends TestCase
             $this->product(['name' => 'Lotus panel', 'created_at' => '2026-02-10 12:00:00']);
         }
         $filters = ['q' => 'Lotus', 'status' => 'active', 'date_from' => '2026-02-10', 'date_to' => '2026-02-10'];
-        $page = $this->get(route('inventory', $filters))->assertOk()->viewData('products');
+        $response = $this->get(route('inventory', $filters))->assertOk()
+            ->assertSee('class="pagination"', false)
+            ->assertSee('class="page-link"', false)
+            ->assertDontSee('viewBox="0 0 20 20"', false);
+        $page = $response->viewData('products');
         $this->assertSame(11, $page->total());
         $this->assertCount(10, $page->items());
         parse_str(parse_url($page->nextPageUrl(), PHP_URL_QUERY), $query);
