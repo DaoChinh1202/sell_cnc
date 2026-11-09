@@ -118,19 +118,19 @@ class ProductDetailTest extends TestCase
         $this->assertSame($current->sku, $schema['sku']);
     }
 
-    public function test_related_products_are_limited_to_eight_and_fall_back_without_tags(): void
+    public function test_related_products_are_limited_to_twelve_and_fall_back_without_tags(): void
     {
         $current = $this->product();
         foreach (range(1, 14) as $i) {
             $this->product();
         }
         $this->get(route('storefront.products.show', $current))->assertOk()
-            ->assertViewHas('relatedProducts', fn ($products) => $products->count() === 8 && ! $products->contains('id', $current->id))
+            ->assertViewHas('relatedProducts', fn ($products) => $products->count() === 12 && ! $products->contains('id', $current->id))
             ->assertSee('class="cnc-grid"', false)
             ->assertDontSee('data-related-', false);
     }
 
-    public function test_related_grid_renders_all_eight_and_fills_tag_matches_without_duplicates(): void
+    public function test_related_grid_renders_all_twelve_and_fills_tag_matches_without_duplicates(): void
     {
         $current = $this->product(['tags' => ['carousel']]);
         $shared = collect();
@@ -141,10 +141,10 @@ class ProductDetailTest extends TestCase
         foreach (range(1, 10) as $i) {
             $fallback->push($this->product(['name' => 'Fallback carousel '.$i]));
         }
-        $expected = $shared->reverse()->concat($fallback->reverse()->take(3))->pluck('id')->all();
+        $expected = $shared->reverse()->concat($fallback->reverse()->take(7))->pluck('id')->all();
         $response = $this->get(route('storefront.products.show', $current))->assertOk()
             ->assertViewHas('relatedProducts', fn ($products) => $products->pluck('id')->all() === $expected);
-        foreach ($shared->concat($fallback->reverse()->take(3)) as $product) {
+        foreach ($shared->concat($fallback->reverse()->take(7)) as $product) {
             $response->assertSee($product->name);
         }
     }
