@@ -12,6 +12,28 @@ class ProductCatalogTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_home_limits_newest_products_to_six_in_newest_order(): void
+    {
+        $this->withoutVite();
+        $category = Category::create(['name' => 'Newest', 'slug' => 'newest', 'status' => 'active']);
+        $ids = [];
+        foreach (range(1, 8) as $i) {
+            $ids[] = Product::create([
+                'category_id' => $category->id,
+                'name' => 'Newest sample '.$i,
+                'sku' => 'NEWEST-'.$i,
+                'price' => 100,
+                'status' => 'active',
+                'created_at' => now()->subDays(9 - $i),
+            ])->id;
+        }
+        $expected = array_slice(array_reverse($ids), 0, 6);
+        $this->get(route('home'))->assertOk()
+            ->assertViewHas('newestProducts', fn ($products) => $products->modelKeys() === $expected)
+            ->assertSee('Newest sample 3')
+            ->assertDontSee('Newest sample 2');
+    }
+
     public function test_admin_product_updates_persist_featured_input(): void
     {
         $this->actingAs(User::factory()->admin()->create());
