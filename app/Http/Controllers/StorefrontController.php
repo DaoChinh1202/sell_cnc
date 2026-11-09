@@ -30,7 +30,7 @@ class StorefrontController extends Controller
             ->where('status', 'active')->firstOrFail();
         $candidates = Product::query()->visible()->with('category')
             ->where('id', '!=', $product->id)->latest()->orderByDesc('id');
-        $relatedLimit = 12;
+        $relatedLimit = 8;
         $relatedProducts = collect();
 
         if (! empty($product->tags)) {

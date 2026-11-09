@@ -1,4 +1,4 @@
-import { initRelatedProductsCarousel } from './related-products-carousel';
+
 
 async function copySku(value) {
     try {
@@ -40,7 +40,7 @@ export function initProductDetail() {
     const root = document.querySelector('[data-product-detail]');
     if (!root) return;
 
-    initRelatedProductsCarousel(root);
+
 
     const copyButton = root.querySelector('[data-copy-sku]');
     const status = root.querySelector('[data-copy-status]');
