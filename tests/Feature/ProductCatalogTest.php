@@ -12,22 +12,22 @@ class ProductCatalogTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_home_limits_newest_products_to_six_in_newest_order(): void
+    public function test_home_limits_newest_products_to_twelve_in_newest_order(): void
     {
         $this->withoutVite();
         $category = Category::create(['name' => 'Newest', 'slug' => 'newest', 'status' => 'active']);
         $ids = [];
-        foreach (range(1, 8) as $i) {
+        foreach (range(1, 14) as $i) {
             $ids[] = Product::create([
                 'category_id' => $category->id,
                 'name' => 'Newest sample '.$i,
                 'sku' => 'NEWEST-'.$i,
                 'price' => 100,
                 'status' => 'active',
-                'created_at' => now()->subDays(9 - $i),
+                'created_at' => now()->subDays(15 - $i),
             ])->id;
         }
-        $expected = array_slice(array_reverse($ids), 0, 6);
+        $expected = array_slice(array_reverse($ids), 0, 12);
         $this->get(route('home'))->assertOk()
             ->assertViewHas('newestProducts', fn ($products) => $products->modelKeys() === $expected)
             ->assertSee('Newest sample 3')

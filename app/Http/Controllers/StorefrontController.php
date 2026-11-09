@@ -19,7 +19,7 @@ class StorefrontController extends Controller
             ->get();
 
         $newestProducts = Product::query()->visible()->with('category')
-            ->latest()->orderByDesc('id')->limit(6)->get();
+            ->latest()->orderByDesc('id')->limit(12)->get();
 
         return view('home', compact('categories', 'newestProducts'));
     }
