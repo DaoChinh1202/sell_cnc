@@ -100,7 +100,7 @@ class ProductImageServiceTest extends TestCase
     public function test_default_watermark_contains_the_requested_three_lines(): void
     {
         $this->assertSame([
-            'Duy Hoang',
+            'Duy Hoàng',
             'Nhận vẽ thiết kế mẫu quét mẫu JDPAINT-ARTFOM theo yêu cầu.',
             'Liên hệ: 0869252228',
         ], config('images.watermark_lines'));

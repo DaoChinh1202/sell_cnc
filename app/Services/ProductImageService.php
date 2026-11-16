@@ -175,7 +175,7 @@ class ProductImageService
             throw new RuntimeException('Cần cấu hình đủ ba dòng watermark.');
         }
 
-        $fontSize = 48.0;
+        $fontSize = 54.0;
         $padding = 8;
         $gap = 26;
         $bounds = [];
@@ -213,8 +213,8 @@ class ProductImageService
                 $top += $box['height'] + $gap;
             }
 
-            // Negative rotation slopes down from left to right, matching the reference image.
-            $rotated = imagerotate($layer, -22, $transparent);
+            // Keep a gentle downward slope while leaving the text closer to horizontal.
+            $rotated = imagerotate($layer, -6, $transparent);
             if ($rotated === false) {
                 throw new RuntimeException('Không thể xoay watermark.');
             }
@@ -232,7 +232,7 @@ class ProductImageService
 
             $width = imagesx($image);
             $height = imagesy($image);
-            $scale = min($width * 0.94 / imagesx($rotated), $height * 0.82 / imagesy($rotated));
+            $scale = min($width * 0.98 / imagesx($rotated), $height * 0.86 / imagesy($rotated));
             $targetWidth = max(1, (int) floor(imagesx($rotated) * $scale));
             $targetHeight = max(1, (int) floor(imagesy($rotated) * $scale));
             $x = (int) floor(($width - $targetWidth) / 2);

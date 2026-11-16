@@ -86,6 +86,7 @@ class ProductDetailTest extends TestCase
         $product = $this->product();
         $this->get(route('storefront.products.show', $product))->assertOk()
             ->assertSee('Liên hệ nhận mẫu')->assertSee('tel:0869252228', false)
+                        ->assertSee('Duy Hoàng · Hỗ trợ mẫu CNC')
             ->assertDontSee('Tải miễn phí')->assertDontSee('product-detail__specifications', false)
             ->assertDontSee('related-products-title', false);
         $product->update($this->metadata() + ['free_download_url' => 'https://drive.google.com/file/d/example/view',

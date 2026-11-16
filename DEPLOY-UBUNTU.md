@@ -380,7 +380,7 @@ Thay `IP_VPS` bằng IP public thật. `APP_URL` khai báo URL ứng dụng, kh�
 
 Không dùng hostname `mysql`, `redis`, `app` của Docker. Dùng port local MySQL `3306`, không phải port host Docker `3308`.
 
-Ảnh sản phẩm upload mới có một cụm ba dòng chữ đỏ viền trắng nghiêng 22° xuống bên phải: `Duy Hoang`, `Nhận vẽ thiết kế mẫu quét mẫu JDPAINT-ARTFOM theo yêu cầu.`, `Liên hệ: 0869252228`. Nội dung đặt tại `config/images.php`; các biến `IMAGE_WATERMARK_PHONE`, `IMAGE_WATERMARK_TEXT` và logo cũ không còn được dùng. Font mặc định là DejaVuSans-Bold; cập nhật `IMAGE_WATERMARK_FONT` nếu đang dùng font thường. Sau khi cập nhật, chạy `php artisan config:cache`. Ảnh đã lưu không tự đổi watermark; cần upload lại ảnh gốc chưa có watermark. Ảnh danh mục không chịu ảnh hưởng.
+Ảnh sản phẩm upload mới có một cụm ba dòng chữ đỏ viền trắng nghiêng 22° xuống bên phải: `Duy Hoàng`, `Nhận vẽ thiết kế mẫu quét mẫu JDPAINT-ARTFOM theo yêu cầu.`, `Liên hệ: 0869252228`. Nội dung đặt tại `config/images.php`; các biến `IMAGE_WATERMARK_PHONE`, `IMAGE_WATERMARK_TEXT` và logo cũ không còn được dùng. Font mặc định là DejaVuSans-Bold; cập nhật `IMAGE_WATERMARK_FONT` nếu đang dùng font thường. Sau khi cập nhật, chạy `php artisan config:cache`. Ảnh đã lưu không tự đổi watermark; cần upload lại ảnh gốc chưa có watermark. Ảnh danh mục không chịu ảnh hưởng.
 
 ## 8. Quyền truy cập source và runtime
 

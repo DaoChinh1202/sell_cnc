@@ -101,7 +101,7 @@
                         <a class="product-detail__action" href="tel:0869252228">Gọi 0869 252 228</a>
                     </div>
                     <aside class="product-detail__service" aria-label="Hỗ trợ thiết kế">
-                        <strong>Duy Hoang · Hỗ trợ mẫu CNC</strong>
+                        <strong>Duy Hoàng · Hỗ trợ mẫu CNC</strong>
                         <p>Cần chỉnh sửa hoặc tìm mẫu? Gửi mã mẫu, kích thước và yêu cầu thực tế qua Zalo để trao đổi.</p>
                     </aside>
                 </section>
